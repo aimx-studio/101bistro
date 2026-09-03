@@ -464,3 +464,27 @@ function vaciarPedido(){
   document.querySelectorAll(".observaciones, .observaciones-unidad").forEach(t => { t.value = ""; });
   calcularTotal();
 }
+
+/* ===== Mejoras al campo de cantidad (evitar tener que borrar manualmente) ===== */
+// Al tocar el campo, selecciona el número que ya tiene para que escribir lo reemplace directo
+document.addEventListener("focusin", (e) => {
+  if (e.target.classList && e.target.classList.contains("cantidad")) {
+    e.target.select();
+  }
+});
+
+// Si el plato está marcado y el cliente deja el campo en 0 o vacío, vuelve a 1 automáticamente
+document.addEventListener("focusout", (e) => {
+  if (e.target.classList && e.target.classList.contains("cantidad")) {
+    const item = e.target.closest(".item");
+    const cb = item?.querySelector(".check-plato");
+    if (cb && cb.checked) {
+      const valor = Number(e.target.value);
+      if (!valor || valor < 1) {
+        e.target.value = 1;
+        actualizarUnidadesCaserito(e.target);
+        calcularTotal();
+      }
+    }
+  }
+});
