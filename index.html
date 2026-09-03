@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>101 Bistró · Menú Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,600&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <span class="eyebrow">Turbo · Antioquia</span>
+  <h1 class="brand">101 Bistró</h1>
+  <p class="tagline">El Verdadero Sabor Artesanal</p>
+  <div class="rule"></div>
+</header>
+
+<div class="wrap">
+
+  <div id="landing">
+    <p class="landing-intro">¿Qué se te antoja hoy?</p>
+    <button type="button" class="landing-btn" id="btnCarta" onclick="mostrarCarta()">
+      📖 Ver la Carta
+      <small>Disponible de 11:00 a.m. a 11:00 p.m.</small>
+    </button>
+    <button type="button" class="landing-btn" id="btnCaseritos" onclick="mostrarCaseritos()">
+      🏠 Ver Caseritos
+      <small>Disponible de 11:00 a.m. a 3:00 p.m.</small>
+    </button>
+    <p id="cerradoMsg" class="cerrado-msg" style="display:none;"></p>
+  </div>
+
+  <form id="pedidoForm" style="display:none;">
+    <div class="top-actions">
+      <button type="button" class="volver-btn" onclick="volverLanding()">‹ Cambiar de menú</button>
+      <button type="button" class="btn-vaciar" onclick="confirmarVaciarPedido()">🗑️ Vaciar pedido</button>
+    </div>
+
+<div id="seccionCarta" style="display:none;">
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🥟 Entradas</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Quesudos" value="Quesudos"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Quesudos</span></label>
+          <span class="precio" data-precio="20000">$20.000</span>
+          <input type="number" class="cantidad" name="QuesudosCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">8 deditos rellenos de queso, acompañados de salsa de frutos rojos.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PapialpaAlPanko" value="Papialpa al Panko"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Papialpa al Panko</span></label>
+          <span class="precio" data-precio="20000">$20.000</span>
+          <input type="number" class="cantidad" name="PapialpaAlPankoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">5 triángulos de queso apanados al panko, acompañados de sweet chili.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="CoctelCaribeno" value="Cóctel Caribeño"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Cóctel Caribeño</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="CoctelCaribenoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Camarones, salsa golf, cebolla, cilantro, picante y zumo de limón, acompañado de chips de plátano.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="ArosDeCebollaApanados" value="Aros de Cebolla Apanados"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Aros de Cebolla Apanados</span></label>
+          <span class="precio" data-precio="10000">$10.000</span>
+          <input type="number" class="cantidad" name="ArosDeCebollaApanadosCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">8 aros de cebolla apanados, acompañados de salsa tártara.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🍹 Cócteles</h2>
+    <div class="platos" style="display:none;">
+      <p class="subcat-label">Tradicionales</p>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="MargaritaTradicional" value="Margarita Tradicional"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Margarita Tradicional</span></label>
+          <span class="precio" data-precio="35000">$35.000</span>
+          <input type="number" class="cantidad" name="MargaritaTradicionalCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Tequila Jose Cuervo, triple sec y zumo de limón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PinaColada" value="Piña Colada"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Piña Colada</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="PinaColadaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Ron viejo de caldas roble blanco, piña, crema de coco, leche condensada.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="MojitoTradicional" value="Mojito Tradicional"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Mojito Tradicional</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="MojitoTradicionalCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Ron viejo de caldas roble blanco, yerbabuena, zumo de limón, sirop simple.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="MoscowMule" value="Moscow Mule"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Moscow Mule</span></label>
+          <span class="precio" data-precio="35000">$35.000</span>
+          <input type="number" class="cantidad" name="MoscowMuleCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Smirnoff red vodka, ginger beer spicy, miel de jengibre, zumo de limón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="TequilaSunrise" value="Tequila Sunrise"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Tequila Sunrise</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="TequilaSunriseCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Tequila Jose Cuervo, triple sec, jugo de naranja y granadina.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="TintoVerano" value="Tinto Verano"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Tinto Verano</span></label>
+          <span class="precio" data-precio="20000">$20.000</span>
+          <input type="number" class="cantidad" name="TintoVeranoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Vino tinto, zumo de limón, jugo de naranja, sirop simple, Sprite.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="ClassicGin" value="Classic Gin"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Classic Gin</span></label>
+          <span class="precio" data-precio="35000">$35.000</span>
+          <input type="number" class="cantidad" name="ClassicGinCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Ginebra gordon's, agua tónica, sirop de canela, pimienta negra.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <p class="subcat-label">101 Bistró</p>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="MargaritaTamarindo" value="Margarita Tamarindo"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Margarita Tamarindo</span></label>
+          <span class="precio" data-precio="35000">$35.000</span>
+          <input type="number" class="cantidad" name="MargaritaTamarindoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Tequila Jose Cuervo, triple sec, sirop de tamarindo, zumo de limón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="MargaritaDeFlorDeJamaica" value="Margarita de Flor de Jamaica"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Margarita de Flor de Jamaica</span></label>
+          <span class="precio" data-precio="35000">$35.000</span>
+          <input type="number" class="cantidad" name="MargaritaDeFlorDeJamaicaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Tequila Jose Cuervo, triple sec, sirop de flor de jamaica, zumo de limón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="MojitoFresa" value="Mojito Fresa"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Mojito Fresa</span></label>
+          <span class="precio" data-precio="20000">$20.000</span>
+          <input type="number" class="cantidad" name="MojitoFresaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Ron viejo de caldas roble blanco, yerbabuena, fresa, base de frutos rojos, zumo de limón, Sprite.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="MojitoDeLychee" value="Mojito de Lychee"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Mojito de Lychee</span></label>
+          <span class="precio" data-precio="20000">$20.000</span>
+          <input type="number" class="cantidad" name="MojitoDeLycheeCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Ron viejo de caldas roble blanco, yerbabuena, base de lychee, zumo de limón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Himalaya" value="Himalaya"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Himalaya</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="HimalayaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Blend de licores, base de granadina, base de frutos rojos, zumo de limón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="BistroGin" value="Bistró Gin"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Bistró Gin</span></label>
+          <span class="precio" data-precio="40000">$40.000</span>
+          <input type="number" class="cantidad" name="BistroGinCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Ginebra gordon's, base de frutos rojos, yerbabuena, pimienta rosada, agua tónica, zumo de limón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PinkHawaiian" value="Pink Hawaiian"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Pink Hawaiian</span></label>
+          <span class="precio" data-precio="35000">$35.000</span>
+          <input type="number" class="cantidad" name="PinkHawaiianCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Ron viejo de caldas, base de granadina, crema de coco, zumo de piña, zumo de limón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="AmarettoSour" value="Amaretto Sour"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Amaretto Sour</span></label>
+          <span class="precio" data-precio="35000">$35.000</span>
+          <input type="number" class="cantidad" name="AmarettoSourCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Licor de Amaretto, whisky red label, base de maracuyá, zumo de limón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Coctel101" value="Coctel 101"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Coctel 101</span></label>
+          <span class="precio" data-precio="45000">$45.000</span>
+          <input type="number" class="cantidad" name="Coctel101Cantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Licor de almendra, whisky red label, miel de chontaduro, zumo de limón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🍕 Pizzas Artesanales</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Hawaiana" value="Hawaiana"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Hawaiana</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="HawaianaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Jamón, queso y piña.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="NewYork" value="New York"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">New York</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="NewYorkCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Jamón, queso, salami y cabano.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Italiana" value="Italiana"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Italiana</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="ItalianaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Jamón, queso, salami, cabano, aceitunas, queso parmesano y pesto de albahaca.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Colombiana" value="Colombiana"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Colombiana</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="ColombianaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Maduro, tocineta, queso y queso parmesano.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Filadelfia" value="Filadelfia"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Filadelfia</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="FiladelfiaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pollo, champiñones, salami y jamón.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">⭐ Especiales de la Casa</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="SandwichCubanoRopaVieja" value="Sandwich Cubano Ropa Vieja"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Sandwich Cubano Ropa Vieja</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="SandwichCubanoRopaViejaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pan baguet artesanal con especias, carne desmechada, tomate, queso y salsa de ajo artesanal.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="SandwichCubanoPechugaALaParrilla" value="Sandwich Cubano Pechuga a la Parrilla"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Sandwich Cubano Pechuga a la Parrilla</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="SandwichCubanoPechugaALaParrillaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pan baguet artesanal con especias, 180gr de pechuga a la parrilla, tomate, queso y salsa de ajo artesanal.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PanCookDeSolomitoALaPimienta" value="Pan Cook de Solomito a la Pimienta"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Pan Cook de Solomito a la Pimienta</span></label>
+          <span class="precio" data-precio="30000">$30.000</span>
+          <input type="number" class="cantidad" name="PanCookDeSolomitoALaPimientaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pan baguet artesanal relleno de solomito a la pimienta y gratinado.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PanCookDePolloYChampinones" value="Pan Cook de Pollo y Champiñones"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Pan Cook de Pollo y Champiñones</span></label>
+          <span class="precio" data-precio="30000">$30.000</span>
+          <input type="number" class="cantidad" name="PanCookDePolloYChampinonesCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pan baguet artesanal relleno de pechuga de pollo en salsa de champiñones y gratinado.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PanCookDeCamaronesAlAjillo" value="Pan Cook de Camarones al Ajillo"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Pan Cook de Camarones al Ajillo</span></label>
+          <span class="precio" data-precio="40000">$40.000</span>
+          <input type="number" class="cantidad" name="PanCookDeCamaronesAlAjilloCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pan baguet artesanal relleno de camarones al ajillo y gratinado.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🦐 Mar</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="SalmonAlLimon" value="Salmón al Limón"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Salmón al Limón</span></label>
+          <span class="precio" data-precio="45000">$45.000</span>
+          <input type="number" class="cantidad" name="SalmonAlLimonCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">200gr de filete de salmón al sartén, bañado en mantequilla de limón, ajo y romero.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="SalmonAlLimonAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="SalmonAlLimonAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label><label><input type="radio" name="SalmonAlLimonAcompanamiento" value="Papa rústica"> Papa rústica</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="CazuelaDeMariscos" value="Cazuela de Mariscos"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Cazuela de Mariscos</span></label>
+          <span class="precio" data-precio="60000">$60.000</span>
+          <input type="number" class="cantidad" name="CazuelaDeMariscosCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Mix de mariscos frescos, leche de coco y patacones.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="CazuelaDeMariscosAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="CazuelaDeMariscosAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label><label><input type="radio" name="CazuelaDeMariscosAcompanamiento" value="Papa rústica"> Papa rústica</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="RobaloPlayero" value="Róbalo Playero"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Róbalo Playero</span></label>
+          <span class="precio" data-precio="65000">$65.000</span>
+          <input type="number" class="cantidad" name="RobaloPlayeroCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">200gr de filete de róbalo en salsa de camarones y leche de coco.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="RobaloPlayeroAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="RobaloPlayeroAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label><label><input type="radio" name="RobaloPlayeroAcompanamiento" value="Papa rústica"> Papa rústica</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="LangostinosGratinados" value="Langostinos Gratinados"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Langostinos Gratinados</span></label>
+          <span class="precio" data-precio="70000">$70.000</span>
+          <input type="number" class="cantidad" name="LangostinosGratinadosCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">8 unidades de langostinos al ajillo gratinados con mezcla de quesos.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="LangostinosGratinadosAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="LangostinosGratinadosAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label><label><input type="radio" name="LangostinosGratinadosAcompanamiento" value="Papa rústica"> Papa rústica</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="LangostinosApanados" value="Langostinos Apanados"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Langostinos Apanados</span></label>
+          <span class="precio" data-precio="70000">$70.000</span>
+          <input type="number" class="cantidad" name="LangostinosApanadosCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">8 unidades de langostinos jumbo apanados al panko.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="LangostinosApanadosAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="LangostinosApanadosAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label><label><input type="radio" name="LangostinosApanadosAcompanamiento" value="Papa rústica"> Papa rústica</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="TentaculosDePulpoALaParrilla" value="Tentáculos de Pulpo a la Parrilla"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Tentáculos de Pulpo a la Parrilla</span></label>
+          <span class="precio" data-precio="60000">$60.000</span>
+          <input type="number" class="cantidad" name="TentaculosDePulpoALaParrillaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">8 unidades de pulpo jumbo asados a la parrilla y bañados en mantequilla de ajo y especias.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="TentaculosDePulpoALaParrillaAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="TentaculosDePulpoALaParrillaAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label><label><input type="radio" name="TentaculosDePulpoALaParrillaAcompanamiento" value="Papa rústica"> Papa rústica</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🍚 Arroces</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="ArrozDeMariscos" value="Arroz de Mariscos"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Arroz de Mariscos</span></label>
+          <span class="precio" data-precio="47000">$47.000</span>
+          <input type="number" class="cantidad" name="ArrozDeMariscosCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Mix de mariscos, vegetales frescos, leche de coco y queso parmesano, acompañado de patacones.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="ArrozDePuntaDeAnca" value="Arroz de Punta de Anca"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Arroz de Punta de Anca</span></label>
+          <span class="precio" data-precio="47000">$47.000</span>
+          <input type="number" class="cantidad" name="ArrozDePuntaDeAncaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Punta de anca, fondo de res, vegetales frescos, queso parmesano y crema, acompañado de patacones.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🔥 Parrilla</h2>
+    <div class="platos" style="display:none;">
+      <p class="subcat-label">Carne de Res</p>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Churrasco" value="Churrasco"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Churrasco</span></label>
+          <span class="precio" data-precio="55000">$55.000</span>
+          <input type="number" class="cantidad" name="ChurrascoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 350gr de lomo ancho en corte mariposa, con salsa chimichurri.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="ChurrascoAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="ChurrascoAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="ChurrascoAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="ChurrascoAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PuntaDeAnca" value="Punta de Anca"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Punta de Anca</span></label>
+          <span class="precio" data-precio="55000">$55.000</span>
+          <input type="number" class="cantidad" name="PuntaDeAncaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 350gr de punta de anca en corte mariposa, con salsa chimichurri.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="PuntaDeAncaAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="PuntaDeAncaAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="PuntaDeAncaAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="PuntaDeAncaAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="EntranitaDeResALaNapolitana" value="Entrañita de Res a la Napolitana"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Entrañita de Res a la Napolitana</span></label>
+          <span class="precio" data-precio="44000">$44.000</span>
+          <input type="number" class="cantidad" name="EntranitaDeResALaNapolitanaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 500gr de entrañita de res en salsa pomodoro gratinada.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="EntranitaDeResALaNapolitanaAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="EntranitaDeResALaNapolitanaAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="EntranitaDeResALaNapolitanaAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="EntranitaDeResALaNapolitanaAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PepperSteak" value="Pepper Steak"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Pepper Steak</span></label>
+          <span class="precio" data-precio="60000">$60.000</span>
+          <input type="number" class="cantidad" name="PepperSteakCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 300gr de jugosos medallones de solomito, bañados en salsa de pimienta negra.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="PepperSteakAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="PepperSteakAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="PepperSteakAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="PepperSteakAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="BabyBeefGratinado" value="Baby Beef Gratinado"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Baby Beef Gratinado</span></label>
+          <span class="precio" data-precio="50000">$50.000</span>
+          <input type="number" class="cantidad" name="BabyBeefGratinadoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 250gr de solomito de res a la parrilla, gratinado con salsa de queso.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="BabyBeefGratinadoAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="BabyBeefGratinadoAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="BabyBeefGratinadoAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="BabyBeefGratinadoAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="FiletMignon" value="Filet Mignon"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Filet Mignon</span></label>
+          <span class="precio" data-precio="60000">$60.000</span>
+          <input type="number" class="cantidad" name="FiletMignonCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 300gr de jugosos medallones de solomito, albardados con tocineta, terminados con salsa de champiñones.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="FiletMignonAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="FiletMignonAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="FiletMignonAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="FiletMignonAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="MarYTierra" value="Mar y Tierra"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Mar y Tierra</span></label>
+          <span class="precio" data-precio="70000">$70.000</span>
+          <input type="number" class="cantidad" name="MarYTierraCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 250gr de jugosos medallones de solomito, bañados en 150gr de salsa cremosa de langostinos.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="MarYTierraAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="MarYTierraAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="MarYTierraAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="MarYTierraAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <p class="subcat-label">Pechuga</p>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="ChurrascoDePechuga" value="Churrasco de Pechuga"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Churrasco de Pechuga</span></label>
+          <span class="precio" data-precio="40000">$40.000</span>
+          <input type="number" class="cantidad" name="ChurrascoDePechugaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 300gr de suprema de pollo en corte mariposa, acompañado con salsa chimichurri.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="ChurrascoDePechugaAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="ChurrascoDePechugaAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="ChurrascoDePechugaAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="ChurrascoDePechugaAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="CordonBleu" value="Cordon Bleu"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Cordon Bleu</span></label>
+          <span class="precio" data-precio="50000">$50.000</span>
+          <input type="number" class="cantidad" name="CordonBleuCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 200gr de pechuga de pollo rellena de jamón y queso apanada, terminada con salsa de champiñones.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="CordonBleuAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="CordonBleuAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="CordonBleuAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="CordonBleuAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <p class="subcat-label">Carne de Cerdo</p>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="CostillasBbq" value="Costillas BBQ"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Costillas BBQ</span></label>
+          <span class="precio" data-precio="45000">$45.000</span>
+          <input type="number" class="cantidad" name="CostillasBbqCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 400gr de costilla de cerdo a la parrilla, barnizada en salsa BBQ de tomate de árbol y red pepper.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="CostillasBbqAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="CostillasBbqAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="CostillasBbqAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="CostillasBbqAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="CostillasBarbacoa" value="Costillas Barbacoa"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Costillas Barbacoa</span></label>
+          <span class="precio" data-precio="45000">$45.000</span>
+          <input type="number" class="cantidad" name="CostillasBarbacoaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Incluye Ensalada 101 y un acompañamiento de harina a elección. 400gr de costilla de cerdo a la parrilla, en salsa a la barbacoa texana.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="CostillasBarbacoaAcompanamiento" value="Puré de papa"> Puré de papa</label><label><input type="radio" name="CostillasBarbacoaAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="CostillasBarbacoaAcompanamiento" value="Patacón"> Patacón</label><label><input type="radio" name="CostillasBarbacoaAcompanamiento" value="Croqueta de yuca"> Croqueta de yuca</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🍝 Pasta</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="AlfredoConPollo" value="Alfredo con Pollo"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Alfredo con Pollo</span></label>
+          <span class="precio" data-precio="45000">$45.000</span>
+          <input type="number" class="cantidad" name="AlfredoConPolloCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pasta fetuccini, pechuga en salsa Alfredo, queso parmesano, acompañada de pan con mantequilla de ajo rostizado.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="AlfredoConPolloAcompanamiento" value="Pan"> Pan</label><label><input type="radio" name="AlfredoConPolloAcompanamiento" value="Patacón"> Patacón</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="BolognesaDeRes" value="Bolognesa de Res"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Bolognesa de Res</span></label>
+          <span class="precio" data-precio="35000">$35.000</span>
+          <input type="number" class="cantidad" name="BolognesaDeResCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pasta fetuccini, salsa bolognesa de res, queso parmesano, acompañada de pan con mantequilla de ajo rostizado.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="BolognesaDeResAcompanamiento" value="Pan"> Pan</label><label><input type="radio" name="BolognesaDeResAcompanamiento" value="Patacón"> Patacón</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Langostinos101" value="Langostinos 101"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Langostinos 101</span></label>
+          <span class="precio" data-precio="70000">$70.000</span>
+          <input type="number" class="cantidad" name="Langostinos101Cantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pasta fetuccini, langostinos salteados al ajillo, queso parmesano y cilantro fresco, acompañada de pan francés tostado.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="Langostinos101Acompanamiento" value="Pan"> Pan</label><label><input type="radio" name="Langostinos101Acompanamiento" value="Patacón"> Patacón</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🍔 Burguer Angus</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Classic" value="Classic"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Classic</span></label>
+          <span class="precio" data-precio="30000">$30.000</span>
+          <input type="number" class="cantidad" name="ClassicCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pan artesanal libre de gluten, 180gr de carne a la parrilla, queso cheddar, tocineta, salsa 101 y vegetales. Incluye papa rústica.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Special" value="Special"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Special</span></label>
+          <span class="precio" data-precio="35000">$35.000</span>
+          <input type="number" class="cantidad" name="SpecialCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pan artesanal libre de gluten, 180gr de carne a la parrilla, queso cheddar, tocineta, aros de cebolla apanados, salsa 101 y vegetales. Incluye papa rústica.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Philadelfia" value="Philadelfia"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Philadelfia</span></label>
+          <span class="precio" data-precio="38000">$38.000</span>
+          <input type="number" class="cantidad" name="PhiladelfiaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pan artesanal libre de gluten, 180gr de carne a la parrilla, queso cheddar, queso philadelfia, cebolla caramelizada, tocineta, salsa 101 y vegetales. Incluye papa rústica.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="3Panoramas" value="3 Panoramas"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">3 Panoramas</span></label>
+          <span class="precio" data-precio="40000">$40.000</span>
+          <input type="number" class="cantidad" name="3PanoramasCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">3 mini hamburguesas Philadelfia, Special y Classic. Incluye papa rústica.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="LaGaucha" value="La Gaucha"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">La Gaucha</span></label>
+          <span class="precio" data-precio="40000">$40.000</span>
+          <input type="number" class="cantidad" name="LaGauchaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pan artesanal libre de gluten, 180gr de carne a la parrilla, queso mozzarella, chorizo, chimichurri, aros de cebolla, salsa 101 y vegetales. Incluye papa rústica.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="CrispyChicken" value="Crispy Chicken"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Crispy Chicken</span></label>
+          <span class="precio" data-precio="27000">$27.000</span>
+          <input type="number" class="cantidad" name="CrispyChickenCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Pan artesanal libre de gluten, 180gr de pechuga apanada, queso cheddar, pepinillos, salsa 101 y vegetales. Incluye papa rústica.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🍽️ Picadas</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Picada101Bistro" value="Picada 101 Bistró"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Picada 101 Bistró</span></label>
+          <span class="precio" data-precio="60000">$60.000</span>
+          <input type="number" class="cantidad" name="Picada101BistroCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Solomito, chicharrón, chorizo argentino, costilla ahumada, papa crispi, croqueta de yuca, papialpa al panko, salsa de la casa. (2 personas)<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PicadaFrutosDelMar" value="Picada Frutos del Mar"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Picada Frutos del Mar</span></label>
+          <span class="precio" data-precio="90000">$90.000</span>
+          <input type="number" class="cantidad" name="PicadaFrutosDelMarCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Langostinos, camarón, filete de pescado, pulpo, patacones y yuca. (2 personas)<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🧒 Menú Infantil</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="TenderDePollo" value="Tender de Pollo"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Tender de Pollo</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="TenderDePolloCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Filete de pechuga apanada al panko, acompañada con papas a la francesa y salsa de tomate.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="TenderDePolloAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="TenderDePolloAcompanamiento" value="Papa a la francesa"> Papa a la francesa</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PapitasFelices" value="Papitas Felices"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Papitas Felices</span></label>
+          <span class="precio" data-precio="25000">$25.000</span>
+          <input type="number" class="cantidad" name="PapitasFelicesCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Papas a la francesa, salchicha ranchera, tocineta y queso fundido, acompañado con salsas de tu elección.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Acompañamiento</span><div class="mod-options"><label><input type="radio" name="PapitasFelicesAcompanamiento" value="Papa rústica"> Papa rústica</label><label><input type="radio" name="PapitasFelicesAcompanamiento" value="Papa a la francesa"> Papa a la francesa</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🥤 Bebidas</h2>
+    <div class="platos" style="display:none;">
+      <p class="subcat-label">Sodas</p>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Soda" value="Soda"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Soda</span></label>
+          <span class="precio" data-precio="17000">$17.000</span>
+          <input type="number" class="cantidad" name="SodaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Elige tu sabor de soda.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Sabor</span><div class="mod-options"><label><input type="radio" name="SodaSabor" value="Frutos rojos"> Frutos rojos</label><label><input type="radio" name="SodaSabor" value="Lychee y lulo"> Lychee y lulo</label><label><input type="radio" name="SodaSabor" value="Tamarindo"> Tamarindo</label><label><input type="radio" name="SodaSabor" value="Maracuyá"> Maracuyá</label><label><input type="radio" name="SodaSabor" value="Manzana verde"> Manzana verde</label><label><input type="radio" name="SodaSabor" value="Sandía y lychee"> Sandía y lychee</label><label><input type="radio" name="SodaSabor" value="Sandía"> Sandía</label><label><input type="radio" name="SodaSabor" value="Mango verde"> Mango verde</label><label><input type="radio" name="SodaSabor" value="Cereza"> Cereza</label><label><input type="radio" name="SodaSabor" value="Fresa"> Fresa</label><label><input type="radio" name="SodaSabor" value="Bistró"> Bistró</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <p class="subcat-label">Jugos</p>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="JugoEnAgua" value="Jugo en Agua"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Jugo en Agua</span></label>
+          <span class="precio" data-precio="10000">$10.000</span>
+          <input type="number" class="cantidad" name="JugoEnAguaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Elige el sabor de tu jugo natural en agua.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Sabor</span><div class="mod-options"><label><input type="radio" name="JugoEnAguaSabor" value="Maracuyá"> Maracuyá</label><label><input type="radio" name="JugoEnAguaSabor" value="Naranja"> Naranja</label><label><input type="radio" name="JugoEnAguaSabor" value="Mora"> Mora</label><label><input type="radio" name="JugoEnAguaSabor" value="Mandarina"> Mandarina</label><label><input type="radio" name="JugoEnAguaSabor" value="Mango"> Mango</label><label><input type="radio" name="JugoEnAguaSabor" value="Lulo"> Lulo</label><label><input type="radio" name="JugoEnAguaSabor" value="Fresa"> Fresa</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="JugoEnLeche" value="Jugo en Leche"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Jugo en Leche</span></label>
+          <span class="precio" data-precio="12000">$12.000</span>
+          <input type="number" class="cantidad" name="JugoEnLecheCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Elige el sabor de tu jugo natural en leche.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Sabor</span><div class="mod-options"><label><input type="radio" name="JugoEnLecheSabor" value="Maracuyá"> Maracuyá</label><label><input type="radio" name="JugoEnLecheSabor" value="Naranja"> Naranja</label><label><input type="radio" name="JugoEnLecheSabor" value="Mora"> Mora</label><label><input type="radio" name="JugoEnLecheSabor" value="Mandarina"> Mandarina</label><label><input type="radio" name="JugoEnLecheSabor" value="Mango"> Mango</label><label><input type="radio" name="JugoEnLecheSabor" value="Lulo"> Lulo</label><label><input type="radio" name="JugoEnLecheSabor" value="Fresa"> Fresa</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <p class="subcat-label">Limonadas</p>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="LimonadaNatural" value="Limonada Natural"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Limonada Natural</span></label>
+          <span class="precio" data-precio="8000">$8.000</span>
+          <input type="number" class="cantidad" name="LimonadaNaturalCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Limonada natural clásica.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="LimonadaCerezada" value="Limonada Cerezada"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Limonada Cerezada</span></label>
+          <span class="precio" data-precio="15000">$15.000</span>
+          <input type="number" class="cantidad" name="LimonadaCerezadaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Limonada con cereza.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="LimonadaDeCoco" value="Limonada de Coco"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Limonada de Coco</span></label>
+          <span class="precio" data-precio="15000">$15.000</span>
+          <input type="number" class="cantidad" name="LimonadaDeCocoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Limonada con coco.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="LimonadaDeTamarindo" value="Limonada de Tamarindo"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Limonada de Tamarindo</span></label>
+          <span class="precio" data-precio="15000">$15.000</span>
+          <input type="number" class="cantidad" name="LimonadaDeTamarindoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Limonada con tamarindo.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="LimonadaDeMangoBiche" value="Limonada de Mango Biche"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Limonada de Mango Biche</span></label>
+          <span class="precio" data-precio="15000">$15.000</span>
+          <input type="number" class="cantidad" name="LimonadaDeMangoBicheCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Limonada con mango biche.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="LimonadaDeYerbabuena" value="Limonada de Yerbabuena"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Limonada de Yerbabuena</span></label>
+          <span class="precio" data-precio="15000">$15.000</span>
+          <input type="number" class="cantidad" name="LimonadaDeYerbabuenaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Limonada con yerbabuena.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="LimonadaDeLychee" value="Limonada de Lychee"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Limonada de Lychee</span></label>
+          <span class="precio" data-precio="15000">$15.000</span>
+          <input type="number" class="cantidad" name="LimonadaDeLycheeCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Limonada con lychee.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">🍰 Postres</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="BrownieConHelado" value="Brownie con Helado"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Brownie con Helado</span></label>
+          <span class="precio" data-precio="15000">$15.000</span>
+          <input type="number" class="cantidad" name="BrownieConHeladoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Brownie de chocolate acompañado de helado.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h2 onclick="toggleMenu(this)">➕ Adicionales</h2>
+    <div class="platos" style="display:none;">
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="CascosDePapa130gr" value="Cascos de Papa 130gr"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Cascos de Papa 130gr</span></label>
+          <span class="precio" data-precio="12000">$12.000</span>
+          <input type="number" class="cantidad" name="CascosDePapa130grCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Cascos de papa criolla fritos.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PureDePapa120gr" value="Puré de Papa 120gr"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Puré de Papa 120gr</span></label>
+          <span class="precio" data-precio="9000">$9.000</span>
+          <input type="number" class="cantidad" name="PureDePapa120grCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Puré de papa cremoso.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="PataconesCrocantes" value="Patacones Crocantes"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Patacones Crocantes</span></label>
+          <span class="precio" data-precio="7000">$7.000</span>
+          <input type="number" class="cantidad" name="PataconesCrocantesCantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Patacones crocantes.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+      <div class="item">
+        <div class="item-linea">
+          <label><input type="checkbox" class="check-plato" name="Ensalada101" value="Ensalada 101"
+            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Ensalada 101</span></label>
+          <span class="precio" data-precio="5000">$5.000</span>
+          <input type="number" class="cantidad" name="Ensalada101Cantidad" value="0" min="0" disabled onchange="calcularTotal()">
+        </div>
+        <div class="descripcion">Ensalada de la casa.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+  <div id="seccionCaseritos" style="display:none;">
+  <section class="menu-section">
+    <h2 style="cursor:default;">🏠 Caseritos</h2>
+    <div class="platos" style="display:block;" id="caseritosLista">
+      <p class="caseritos-msg">Cargando los platos de hoy...</p>
+    </div>
+  </section>
+</div>
+
+  <!-- ===================== DETALLES DEL CLIENTE ===================== -->
+  <section class="menu-section">
+    <h2 style="cursor:default;" onclick="event.stopPropagation();">📝 Detalles del Cliente</h2>
+    <div class="platos" style="display:block;padding:16px 18px 4px;">
+
+      <div class="form-group">
+        <label for="nombre">👤 Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre">
+      </div>
+
+      <div class="form-group">
+        <label for="telefono">📞 Número de WhatsApp:</label>
+        <input type="tel" id="telefono" name="telefono" required placeholder="Ej: 3001234567">
+      </div>
+
+      <div class="form-group">
+        <label for="tipoEntrega">📦 Tipo de entrega:</label>
+        <select id="tipoEntrega" name="tipoEntrega" required onchange="manejarEntrega()">
+          <option value="">-- Selecciona --</option>
+          <option value="Recoger en el local">Recoger en el local</option>
+          <option value="A domicilio">A domicilio</option>
+          <option value="Comer dentro del local">Comer dentro del local</option>
+        </select>
+      </div>
+
+      <div id="direccionField" class="form-group" style="display:none;">
+        <p id="costoDomicilio" style="display:none;color:#E06455;font-weight:bold;"></p>
+        <label for="direccion">📍 Dirección:</label>
+        <input type="text" id="direccion" name="direccion">
+      </div>
+
+      <div id="mesaField" class="form-group" style="display:none;">
+        <label for="numeroMesa">🔢 Número de mesa:</label>
+        <input type="text" id="numeroMesa" name="numeroMesa">
+      </div>
+
+      <div class="form-group">
+        <label for="tipoPago">💰 Tipo de pago:</label>
+        <select id="tipoPago" name="tipoPago" required onchange="manejarPago()">
+          <option value="">-- Selecciona --</option>
+          <option value="Efectivo">Efectivo</option>
+          <option value="Transferencia Bancolombia">Transferencia a Bancolombia</option>
+          <option value="QR">Código QR</option>
+          <option value="Datáfono">Datáfono</option>
+          <option value="Llave Bre-B">Llave Bre-B</option>
+        </select>
+      </div>
+
+      <div id="efectivoField" class="form-group" style="display:none;">
+        <label for="efectivoCliente">💵 Con cuánto pagará:</label>
+        <small>Esto ayuda a preparar el cambio correcto 🙏</small>
+        <input type="text" id="efectivoCliente" name="efectivoMonto">
+      </div>
+
+      <div class="form-group">
+        <label for="especificaciones">📒 Especificaciones:</label>
+        <textarea id="especificaciones" name="especificaciones" rows="3" placeholder="Ej: sin cebolla, sin salsas..."></textarea>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== TOTAL Y ENVÍO ===================== -->
+  <section class="menu-section">
+    <div class="total-box">
+      <span>💸 Total:</span>
+      <span id="total">$0</span>
+    </div>
+    <input type="hidden" name="totalPedido" id="totalPedido">
+    <div class="form-group checkbox-line">
+      <label style="display:flex;gap:9px;align-items:flex-start;">
+        <input type="checkbox" id="confirmPedido" required>
+        <span>✅ Autorizo el tratamiento de mis datos para gestionar este pedido.</span>
+      </label>
+    </div>
+    <button type="submit" class="btn" id="btnEnviar">📲 Enviar Pedido</button>
+  </section>
+
+  </form>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
