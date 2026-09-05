@@ -8,12 +8,39 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 let caseritosCargados = false;
 let caseritosMods = {}; // { [productoId]: { grupos: [...], opciones: [...] } } — plantilla de modificadores por plato
 
+// ===== Imágenes de los platos (Caseritos) =====
+// Escribe el nombre del archivo dentro de la carpeta images/ para cada plato.
+// Ejemplo: "Costilla BBQ": "images/costilla-bbq.jpg"
+// Si un plato se deja como "" (vacío), simplemente no muestra foto — no rompe nada.
+const IMAGENES_CASERITOS = {
+  "Róbalo en posta frito": "images/placeholder.jpg",
+  "Róbalo en posta apanado": "images/placeholder.jpg",
+  "Cazuela de mariscos": "images/placeholder.jpg",
+  "Bandeja paisa": "images/placeholder.jpg",
+  "Chicharrón": "images/placeholder.jpg",
+  "Costilla BBQ": "images/placeholder.jpg",
+  "Pechuga rellena": "images/placeholder.jpg",
+  "Pechuga gratinada": "images/placeholder.jpg",
+  "Pechuga apanada": "images/placeholder.jpg",
+  "Cerdo apanado": "images/placeholder.jpg",
+  "Camarones apanados": "images/placeholder.jpg",
+  "Arroz con camarón": "images/placeholder.jpg",
+  "Arroz marinero": "images/placeholder.jpg",
+  "Res a la parrilla": "images/placeholder.jpg",
+  "Tazón paisa": "images/placeholder.jpg",
+  "Cerdo parrilla": "images/placeholder.jpg",
+  "Pechuga parrilla": "images/placeholder.jpg",
+  "Molida": "images/placeholder.jpg",
+  "Desmechada": "images/placeholder.jpg"
+};
+
 function construirItemCaserito(p, grupos, opciones, asignaciones){
   const id = "Cas" + String(p.id);
   const nombre = p.nombre || "";
   const precio = Number(p.precio) || 0;
   const desc = p.descripcion || "";
-  const imgHtml = p.imagen ? `<img src="${p.imagen}" alt="${nombre}" class="foto-plato">` : "";
+  const rutaImagen = IMAGENES_CASERITOS[nombre] || p.imagen || "";
+  const imgHtml = rutaImagen ? `<img src="${rutaImagen}" alt="${nombre}" class="foto-plato">` : "";
 
   const idsGrupoBase = asignaciones.filter(a => a.producto_id === p.id).map(a => a.grupo_id);
   const gruposBase = grupos.filter(g => idsGrupoBase.includes(g.id) && g.tipo !== 'texto');
@@ -36,6 +63,12 @@ function construirItemCaserito(p, grupos, opciones, asignaciones){
     ? `<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea>`
     : "";
 
+  const incluyeHtml = `<div class="incluye-fijo">
+      <img src="images/sopa.jpg" alt="Sopa" class="incluye-mini">
+      <img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini">
+      <span>Incluye sopa o frijoles</span>
+    </div>`;
+
   return `<div class="item" data-producto-id="${p.id}">
       <div class="item-linea">
         <label><input type="checkbox" class="check-plato" name="${id}" value="${nombre}"
@@ -43,7 +76,7 @@ function construirItemCaserito(p, grupos, opciones, asignaciones){
         <span class="precio" data-precio="${precio}">$${precio.toLocaleString("es-CO")}</span>
         <input type="number" class="cantidad" name="${id}Cantidad" value="0" min="0" disabled oninput="actualizarUnidadesCaserito(this)" onchange="calcularTotal(); actualizarUnidadesCaserito(this)">
       </div>
-      <div class="descripcion">${imgHtml}${desc}<div class="unidades-caserito" id="unidades-${id}"></div>${obsCompartidaHtml}</div>
+      <div class="descripcion">${imgHtml}${desc}${incluyeHtml}<div class="unidades-caserito" id="unidades-${id}"></div>${obsCompartidaHtml}</div>
     </div>`;
 }
 
@@ -158,6 +191,7 @@ async function cargarCaseritos(){
     if (!pmResp.ok) throw new Error("Respuesta no válida de Supabase");
     const asignaciones = await pmResp.json();
 
+    productos.sort((a, b) => (Number(b.precio) || 0) - (Number(a.precio) || 0));
     cont.innerHTML = productos.map(p => construirItemCaserito(p, grupos, opciones, asignaciones)).join("");
     caseritosCargados = true;
     inicializarDependenciasModificadores();
@@ -423,6 +457,44 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
       lineas.push(`• ${cb.value} x${cantidad}${obsTxt}`);
     }
   });
+
+  // Validar modificadores obligatorios en Caseritos: "Acompañamiento principal" y "¿Desea guarnición?"
+  const GRUPOS_OBLIGATORIOS = ["Acompañamiento principal", "¿Desea guarnición?"];
+  let faltante = null;
+
+  document.querySelectorAll(".item").forEach(item => {
+    if (faltante) return; // ya se encontró un error, no seguir buscando
+    const cb = item.querySelector(".check-plato");
+    if (!cb || !cb.checked) return;
+    const cantidad = Number(item.querySelector(".cantidad")?.value) || 0;
+    if (cantidad <= 0) return;
+
+    const bloquesUnidad = Array.from(item.querySelectorAll(".unidad-plato"));
+    if (!bloquesUnidad.length) return; // plato sin modificadores, no aplica
+
+    bloquesUnidad.forEach((bloque, idx) => {
+      if (faltante) return;
+      GRUPOS_OBLIGATORIOS.forEach(nombreGrupo => {
+        if (faltante) return;
+        const grupo = Array.from(bloque.querySelectorAll(".mod-group")).find(g => {
+          if (g.style.display === "none") return false; // grupo oculto por dependencia, no aplica
+          return g.querySelector(".mod-label")?.textContent === nombreGrupo;
+        });
+        if (!grupo) return; // este plato no tiene ese grupo asignado, no aplica
+        const marcado = grupo.querySelector("input:checked");
+        if (!marcado) {
+          const etiqueta = bloquesUnidad.length > 1 ? ` (Plato ${idx + 1})` : "";
+          faltante = `${cb.value}${etiqueta}: falta elegir "${nombreGrupo}"`;
+        }
+      });
+    });
+  });
+
+  if (faltante) {
+    alert(`Falta completar tu pedido:\n\n${faltante}`);
+    btn.disabled = false;
+    return;
+  }
 
   if (lineas.length === 0) {
     alert("Selecciona al menos un plato antes de enviar el pedido.");

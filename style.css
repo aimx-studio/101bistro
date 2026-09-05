@@ -36,6 +36,10 @@
     background:repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 14px);
     pointer-events:none;
   }
+  .logo-header{
+    display:block;width:160px;height:160px;border-radius:50%;object-fit:cover;
+    margin:8px auto 14px;border:1px solid var(--line);
+  }
   .eyebrow{
     font-size:0.72rem;color:var(--gold-soft);letter-spacing:1px;
     display:inline-block;margin-bottom:10px;position:relative;
@@ -233,4 +237,15 @@
   }
   .platos > .subcat-label:first-child{margin-top:2px;}
   .caseritos-msg{text-align:center;color:var(--dim);font-size:0.85rem;padding:24px 10px;}
-  .foto-plato{width:100%;max-height:150px;object-fit:cover;border-radius:8px;margin-bottom:8px;display:block;}
+  .foto-plato{
+    width:100%;max-height:220px;object-fit:contain;
+    background:radial-gradient(circle at 50% 40%, rgba(255,255,255,0.03), transparent 70%), var(--bg-panel);
+    border-radius:12px;margin-bottom:10px;display:block;
+    border:1px solid var(--line);
+    box-shadow:0 6px 18px rgba(0,0,0,0.35);
+    padding:6px;
+  }
+  .incluye-fijo{
+    display:flex;align-items:center;gap:9px;margin:10px 0;font-size:0.82rem;color:var(--dim);
+  }
+  .incluye-mini{width:70px;height:70px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid var(--line);}
