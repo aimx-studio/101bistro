@@ -123,6 +123,14 @@
     display:block;font-size:0.7rem;font-weight:700;color:var(--gold);
     text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;
   }
+  .tabs-hint{
+    font-size:0.75rem;color:var(--gold-soft);margin:0 0 8px;font-weight:600;
+    animation:pulseHint 1.3s ease-in-out 3;
+  }
+  @keyframes pulseHint{
+    0%,100%{opacity:1;}
+    50%{opacity:0.35;}
+  }
   .unidad-tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
   .unidad-tab{
     background:var(--bg-panel);border:1px solid var(--line);color:var(--dim);

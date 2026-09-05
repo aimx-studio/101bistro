@@ -127,14 +127,24 @@ function actualizarTabsCaserito(cont, cantidad){
 
   if (cantidad <= 1){
     if (nav) nav.remove();
+    const hintExistente = cont.querySelector(".tabs-hint");
+    if (hintExistente) hintExistente.remove();
     bloques.forEach(b => b.style.display = "block");
     return;
+  }
+
+  let hint = cont.querySelector(".tabs-hint");
+  if (!hint){
+    hint = document.createElement("p");
+    hint.className = "tabs-hint";
+    hint.textContent = "👉 Toca cada pestaña para elegir diferente en cada plato";
+    cont.insertBefore(hint, cont.firstChild);
   }
 
   if (!nav){
     nav = document.createElement("div");
     nav.className = "unidad-tabs";
-    cont.insertBefore(nav, cont.firstChild);
+    cont.insertBefore(nav, hint.nextSibling);
   }
 
   const activaPrevia = nav.querySelector(".unidad-tab.activa");
@@ -157,6 +167,41 @@ function mostrarUnidadCaserito(btn){
   cont.querySelectorAll(".unidad-plato").forEach(b => {
     b.style.display = (b.dataset.unidad === unidad) ? "block" : "none";
   });
+}
+
+// Extrae los modificadores de un plato para el mensaje de WhatsApp.
+// Si un grupo (ej. "¿Desea arroz?") tiene un grupo "hijo" visible con respuesta
+// (ej. "Tipo de arroz"), se muestra SOLO la respuesta del hijo (ej. "Arroz de coco"),
+// sin repetir la del padre ni el nombre del grupo. Si no hay hijo respondido,
+// se muestra el padre normal (ej. "Sin arroz"). Grupos sin hijos (Ensalada, Adicionales)
+// no cambian su comportamiento.
+function extraerModificadoresUnidad(scopeElement){
+  const mods = [];
+  const grupos = Array.from(scopeElement.querySelectorAll(".mod-group"));
+
+  grupos.forEach(group => {
+    if (group.style.display === "none") return; // oculto por dependencia, no se envía
+    if (group.dataset.dependeDeOpcion) return; // es un grupo "hijo", se procesa desde su padre
+
+    const marcados = Array.from(group.querySelectorAll('input:checked'));
+    if (!marcados.length) return; // nada elegido en este grupo
+
+    const opcionId = marcados[0].dataset.opcionId;
+    const grupoHijo = grupos.find(g => g.dataset.dependeDeOpcion === opcionId && g.style.display !== "none");
+
+    if (grupoHijo){
+      const marcadosHijo = Array.from(grupoHijo.querySelectorAll('input:checked'));
+      if (marcadosHijo.length){
+        mods.push(marcadosHijo.map(i => i.value).join(", "));
+        return; // se usó la respuesta del hijo, no la del padre
+      }
+    }
+
+    const valores = marcados.map(i => i.value).join(", ");
+    mods.push(`${group.querySelector(".mod-label").textContent}: ${valores}`);
+  });
+
+  return mods;
 }
 
 async function cargarCaseritos(){
@@ -419,14 +464,7 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
     if (bloquesUnidad.length > 1){
       // Varias unidades: una línea por plato, cada una con sus propios modificadores y observación
       const partes = bloquesUnidad.map((bloque, idx) => {
-        const modsBloque = [];
-        bloque.querySelectorAll(".mod-group").forEach(group => {
-          if (group.style.display === "none") return; // grupo oculto por dependencia, no se envía
-          const marcados = Array.from(group.querySelectorAll('input:checked'));
-          if (!marcados.length) return;
-          const valores = marcados.map(i => i.value).join(", ");
-          modsBloque.push(`${group.querySelector(".mod-label").textContent}: ${valores}`);
-        });
+        const modsBloque = extraerModificadoresUnidad(bloque);
         const obsUnidad = bloque.querySelector(".observaciones-unidad")?.value.trim();
         let detalle = modsBloque.join(", ");
         if (obsUnidad) detalle += (detalle ? " — " : "") + `Obs: ${obsUnidad}`;
@@ -437,14 +475,7 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
     } else if (bloquesUnidad.length === 1){
       // Una sola unidad con modificadores: se mantiene el formato de siempre
       const bloque = bloquesUnidad[0];
-      const mods = [];
-      bloque.querySelectorAll(".mod-group").forEach(group => {
-        if (group.style.display === "none") return;
-        const marcados = Array.from(group.querySelectorAll('input:checked'));
-        if (!marcados.length) return;
-        const valores = marcados.map(i => i.value).join(", ");
-        mods.push(`${group.querySelector(".mod-label").textContent}: ${valores}`);
-      });
+      const mods = extraerModificadoresUnidad(bloque);
       const saborTxt = mods.length ? ` (${mods.join(", ")})` : "";
       const obs = bloque.querySelector(".observaciones-unidad")?.value.trim();
       const obsTxt = obs ? ` — Obs: ${obs}` : "";
