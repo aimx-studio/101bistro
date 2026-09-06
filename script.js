@@ -198,7 +198,7 @@ function extraerModificadoresUnidad(scopeElement){
     }
 
     const valores = marcados.map(i => i.value).join(", ");
-    mods.push(`${group.querySelector(".mod-label").textContent}: ${valores}`);
+    mods.push(valores); // sin etiqueta del grupo, solo el valor elegido
   });
 
   return mods;
@@ -311,21 +311,23 @@ function inicializarDependenciasModificadores(){
   document.getElementById("caseritosLista").addEventListener("change", (e) => {
     const input = e.target.closest('.mod-options input');
     if (!input) return;
-    const item = input.closest(".item");
-    if (!item) return;
+    // Buscar dentro de la pestaña específica (Plato 1, Plato 2...) en vez de todo el plato,
+    // para que no se cruce la información entre unidades distintas.
+    const scope = input.closest(".unidad-plato") || input.closest(".item");
+    if (!scope) return;
     const grupoActual = input.closest(".mod-group");
     const opcionId = input.dataset.opcionId;
 
-    item.querySelectorAll('.mod-options input[data-opcion-id]').forEach(opt => {
+    scope.querySelectorAll('.mod-options input[data-opcion-id]').forEach(opt => {
       if (opt.closest(".mod-group") !== grupoActual) return;
-      const dependiente = item.querySelector(`.mod-group[data-depende-de-opcion="${opt.dataset.opcionId}"]`);
+      const dependiente = scope.querySelector(`.mod-group[data-depende-de-opcion="${opt.dataset.opcionId}"]`);
       if (dependiente && opt.dataset.opcionId !== opcionId){
         dependiente.style.display = "none";
         dependiente.querySelectorAll("input:checked").forEach(i => i.checked = false);
       }
     });
 
-    const mostrar = item.querySelector(`.mod-group[data-depende-de-opcion="${opcionId}"]`);
+    const mostrar = scope.querySelector(`.mod-group[data-depende-de-opcion="${opcionId}"]`);
     if (mostrar && input.checked) mostrar.style.display = "block";
   });
 }
@@ -555,8 +557,7 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
     }
   });
 
-  // Validar modificadores obligatorios en Caseritos: "Acompañamiento principal" y "¿Desea guarnición?"
-  const GRUPOS_OBLIGATORIOS = ["Acompañamiento principal", "¿Desea guarnición?"];
+  // Validar que todo grupo dentro de "Arma tu plato" tenga una opción elegida (todos son obligatorios)
   let faltante = null;
 
   document.querySelectorAll(".item").forEach(item => {
@@ -571,15 +572,12 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
 
     bloquesUnidad.forEach((bloque, idx) => {
       if (faltante) return;
-      GRUPOS_OBLIGATORIOS.forEach(nombreGrupo => {
+      const gruposVisibles = Array.from(bloque.querySelectorAll(".mod-group")).filter(g => g.style.display !== "none");
+      gruposVisibles.forEach(grupo => {
         if (faltante) return;
-        const grupo = Array.from(bloque.querySelectorAll(".mod-group")).find(g => {
-          if (g.style.display === "none") return false; // grupo oculto por dependencia, no aplica
-          return g.querySelector(".mod-label")?.textContent === nombreGrupo;
-        });
-        if (!grupo) return; // este plato no tiene ese grupo asignado, no aplica
         const marcado = grupo.querySelector("input:checked");
         if (!marcado) {
+          const nombreGrupo = grupo.querySelector(".mod-label")?.textContent || "una opción";
           const etiqueta = bloquesUnidad.length > 1 ? ` (Plato ${idx + 1})` : "";
           faltante = `${cb.value}${etiqueta}: falta elegir "${nombreGrupo}"`;
         }
@@ -602,14 +600,14 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
   let mensaje = `🍽️  NUEVO PEDIDO\n\n`;
   mensaje += `👤 Cliente: ${nombre}\n📞 WhatsApp: ${telefono}\n`;
 
-  mensaje += `\n---\n\n🛒 PEDIDO\n\n`;
+  mensaje += `\n━━━━━━━━━━━━━━━━━\n\n🛒 PEDIDO\n\n`;
   mensaje += productosPedido.map(p => {
     let bloque = `${p.cantidad} × ${p.nombre}`;
     if (p.extras.length) bloque += "\n" + p.extras.map(e => `　• ${e}`).join("\n");
     return bloque;
   }).join("\n\n");
 
-  mensaje += `\n\n---\n\n📦 Entrega: ${tipoEntrega}\n`;
+  mensaje += `\n\n━━━━━━━━━━━━━━━━━\n\n📦 Entrega: ${tipoEntrega}\n`;
   if (tipoEntrega === "A domicilio") mensaje += `📍 Dirección: ${direccion}\n`;
   if (tipoEntrega === "Comer dentro del local") mensaje += `🔢 Mesa: ${numeroMesa}\n`;
   mensaje += `\n💰 Pago: ${tipoPago}\n`;
@@ -617,6 +615,29 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
   if (especificaciones) mensaje += `📒 Especificaciones: ${especificaciones}\n`;
 
   mensaje += `\n💸 TOTAL: ${total}`;
+
+  // ===== Registro en Google Sheets (silencioso, no bloquea el envío a WhatsApp) =====
+  const platosTexto = productosPedido.map(p => {
+    let linea = `${p.cantidad} × ${p.nombre}`;
+    if (p.extras.length) linea += " (" + p.extras.join(", ") + ")";
+    return linea;
+  }).join("\n");
+
+  const formData = new FormData();
+  formData.append('entry.1663713726', nombre);
+  formData.append('entry.856172361', telefono);
+  formData.append('entry.745554867', platosTexto);
+  formData.append('entry.1670087538', tipoEntrega);
+  formData.append('entry.879395181', direccion || '');
+  formData.append('entry.175498978', tipoPago);
+  formData.append('entry.1313055968', especificaciones || '');
+  formData.append('entry.296477633', `${total} COP`);
+
+  fetch('https://docs.google.com/forms/d/e/1FAIpQLSeFreSTyhy0Y3Hl5t6yZhrwZLa7EsGCMIDS7ToFPzchY3-RFQ/formResponse', {
+    method: 'POST',
+    mode: 'no-cors',
+    body: formData
+  });
 
   const numero = "573108191468";
   window.location.href = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensaje);
