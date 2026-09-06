@@ -204,6 +204,68 @@ function extraerModificadoresUnidad(scopeElement){
   return mods;
 }
 
+/* ===== Generalizar pestañas por unidad a los platos de la Carta que tienen modificadores ===== */
+let multiUnidadPlantillas = {}; // { [itemId]: { gruposHtml: "..." } } — plantilla de modificadores por plato de la Carta
+let multiUnidadContador = 0;
+
+function inicializarModificadoresCarta(){
+  document.querySelectorAll("#seccionCarta .item").forEach(item => {
+    const armaPlato = item.querySelector(".arma-plato");
+    if (!armaPlato) return; // este plato de la Carta no tiene modificadores, no aplica
+
+    multiUnidadContador++;
+    const itemId = "carta" + multiUnidadContador;
+    item.dataset.multiId = itemId;
+
+    multiUnidadPlantillas[itemId] = { gruposHtml: armaPlato.innerHTML };
+
+    const cont = document.createElement("div");
+    cont.className = "unidades-caserito"; // reutiliza el mismo sistema visual de pestañas de Caseritos
+    cont.id = "unidades-" + itemId;
+    armaPlato.parentNode.insertBefore(cont, armaPlato);
+    armaPlato.remove();
+
+    // Evita duplicar campo de observaciones: ya queda uno por unidad ("Observaciones Plato N")
+    const obsCompartida = item.querySelector(".observaciones");
+    if (obsCompartida) {
+      obsCompartida.previousElementSibling?.remove(); // quita el label "📝 Observaciones:"
+      obsCompartida.remove();
+    }
+
+    const cantidad = item.querySelector(".cantidad");
+    cantidad.setAttribute("oninput", "actualizarUnidadesMulti(this)");
+    cantidad.setAttribute("onchange", "calcularTotal(); actualizarUnidadesMulti(this)");
+  });
+}
+
+function construirBloqueModificadoresMulti(itemId, unidad, gruposHtml){
+  // Renombra los "name" de los inputs para que cada unidad tenga su propia selección independiente
+  const conNombresUnicos = gruposHtml.replace(/name="([^"]+)"/g, `name="${itemId}_u${unidad}_$1"`);
+  return `<div class="arma-plato unidad-plato" data-unidad="${unidad}">${conNombresUnicos}<label class="obs-label">📝 Observaciones Plato ${unidad}:</label><textarea class="observaciones-unidad" rows="2" placeholder="Ej: sin cebolla, extra picante..."></textarea></div>`;
+}
+
+function actualizarUnidadesMulti(inputCantidad){
+  const item = inputCantidad.closest(".item");
+  const itemId = item?.dataset.multiId;
+  if (!itemId) return;
+  const cont = item.querySelector(".unidades-caserito");
+  if (!cont) return;
+  const cantidad = Number(inputCantidad.value) || 0;
+  const plantilla = multiUnidadPlantillas[itemId];
+  if (!plantilla) return;
+
+  let bloques = cont.querySelectorAll(".unidad-plato");
+  while (bloques.length > cantidad){
+    cont.removeChild(cont.lastElementChild);
+    bloques = cont.querySelectorAll(".unidad-plato");
+  }
+  for (let i = bloques.length + 1; i <= cantidad; i++){
+    cont.insertAdjacentHTML("beforeend", construirBloqueModificadoresMulti(itemId, i, plantilla.gruposHtml));
+  }
+
+  actualizarTabsCaserito(cont, cantidad);
+}
+
 async function cargarCaseritos(){
   if (caseritosCargados) return; // ya se cargaron en esta visita, no repetir la consulta
   const cont = document.getElementById("caseritosLista");
@@ -337,6 +399,7 @@ function volverLanding(){
 }
 
 inicializarHorario();
+inicializarModificadoresCarta();
 
 /* ===== Funciones fijas de la plantilla — NO CAMBIAR ===== */
 function toggleMenu(titulo) {
@@ -359,7 +422,11 @@ function toggleCantidad(checkbox) {
     cantidad.value = 0;
     cantidad.disabled = true;
   }
-  actualizarUnidadesCaserito(cantidad);
+  if (item.dataset.multiId) {
+    actualizarUnidadesMulti(cantidad);
+  } else {
+    actualizarUnidadesCaserito(cantidad);
+  }
   calcularTotal();
 }
 
@@ -452,40 +519,39 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
   const especificaciones = document.getElementById("especificaciones").value;
   const total = document.getElementById("total").innerText;
 
-  let lineas = [];
+  let productosPedido = [];
   document.querySelectorAll(".item").forEach(item => {
     const cb = item.querySelector(".check-plato");
     if (!cb || !cb.checked) return;
     const cantidad = Number(item.querySelector(".cantidad")?.value) || 0;
     if (cantidad <= 0) return;
 
+    const tamanoSel = item.querySelector(".tamano");
+    const precioSpan = item.querySelector(".precio");
+    const precioUnitario = tamanoSel ? (Number(tamanoSel.value) || 0) : (Number(precioSpan?.dataset.precio) || 0);
+
     const bloquesUnidad = Array.from(item.querySelectorAll(".unidad-plato"));
 
     if (bloquesUnidad.length > 1){
-      // Varias unidades: una línea por plato, cada una con sus propios modificadores y observación
-      const partes = bloquesUnidad.map((bloque, idx) => {
-        const modsBloque = extraerModificadoresUnidad(bloque);
+      // Varias unidades: cada plato entra como producto independiente en la lista
+      bloquesUnidad.forEach((bloque, idx) => {
+        const extras = extraerModificadoresUnidad(bloque);
         const obsUnidad = bloque.querySelector(".observaciones-unidad")?.value.trim();
-        let detalle = modsBloque.join(", ");
-        if (obsUnidad) detalle += (detalle ? " — " : "") + `Obs: ${obsUnidad}`;
-        return `   Plato ${idx+1}${detalle ? ": " + detalle : ""}`;
+        if (obsUnidad) extras.push(`Observación: ${obsUnidad}`);
+        productosPedido.push({ nombre: `${cb.value} (Plato ${idx+1})`, cantidad: 1, precioLinea: precioUnitario, extras });
       });
-      lineas.push(`• ${cb.value} x${cantidad}\n` + partes.join("\n"));
 
     } else if (bloquesUnidad.length === 1){
-      // Una sola unidad con modificadores: se mantiene el formato de siempre
       const bloque = bloquesUnidad[0];
-      const mods = extraerModificadoresUnidad(bloque);
-      const saborTxt = mods.length ? ` (${mods.join(", ")})` : "";
+      const extras = extraerModificadoresUnidad(bloque);
       const obs = bloque.querySelector(".observaciones-unidad")?.value.trim();
-      const obsTxt = obs ? ` — Obs: ${obs}` : "";
-      lineas.push(`• ${cb.value}${saborTxt} x${cantidad}${obsTxt}`);
+      if (obs) extras.push(`Observación: ${obs}`);
+      productosPedido.push({ nombre: cb.value, cantidad, precioLinea: precioUnitario * cantidad, extras });
 
     } else {
-      // Plato sin modificadores: observación general, como siempre
       const obs = item.querySelector(".observaciones")?.value.trim();
-      const obsTxt = obs ? ` — Obs: ${obs}` : "";
-      lineas.push(`• ${cb.value} x${cantidad}${obsTxt}`);
+      const extras = obs ? [`Observación: ${obs}`] : [];
+      productosPedido.push({ nombre: cb.value, cantidad, precioLinea: precioUnitario * cantidad, extras });
     }
   });
 
@@ -527,21 +593,30 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
     return;
   }
 
-  if (lineas.length === 0) {
+  if (productosPedido.length === 0) {
     alert("Selecciona al menos un plato antes de enviar el pedido.");
     btn.disabled = false;
     return;
   }
 
-  let mensaje = `101 Bistró:\n\n`;
-  mensaje += lineas.join("\n") + "\n\n";
-  mensaje += `👤 Nombre: ${nombre}\n📞 Teléfono: ${telefono}\n📦 Entrega: ${tipoEntrega}\n`;
+  let mensaje = `🍽️  NUEVO PEDIDO\n\n`;
+  mensaje += `👤 Cliente: ${nombre}\n📞 WhatsApp: ${telefono}\n`;
+
+  mensaje += `\n---\n\n🛒 PEDIDO\n\n`;
+  mensaje += productosPedido.map(p => {
+    let bloque = `${p.cantidad} × ${p.nombre}`;
+    if (p.extras.length) bloque += "\n" + p.extras.map(e => `　• ${e}`).join("\n");
+    return bloque;
+  }).join("\n\n");
+
+  mensaje += `\n\n---\n\n📦 Entrega: ${tipoEntrega}\n`;
   if (tipoEntrega === "A domicilio") mensaje += `📍 Dirección: ${direccion}\n`;
   if (tipoEntrega === "Comer dentro del local") mensaje += `🔢 Mesa: ${numeroMesa}\n`;
-  mensaje += `💰 Pago: ${tipoPago}\n`;
+  mensaje += `\n💰 Pago: ${tipoPago}\n`;
   if (tipoPago === "Efectivo" && efectivoMonto) mensaje += `💵 Paga con: ${efectivoMonto}\n`;
   if (especificaciones) mensaje += `📒 Especificaciones: ${especificaciones}\n`;
-  mensaje += `\n💸 Total: ${total}`;
+
+  mensaje += `\n💸 TOTAL: ${total}`;
 
   const numero = "573108191468";
   window.location.href = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensaje);
