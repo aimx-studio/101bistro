@@ -557,7 +557,8 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
     }
   });
 
-  // Validar que todo grupo dentro de "Arma tu plato" tenga una opción elegida (todos son obligatorios)
+  // Validar modificadores obligatorios en Caseritos: "Acompañamiento principal" y "¿Desea guarnición?"
+  const GRUPOS_OBLIGATORIOS = ["Acompañamiento principal", "¿Desea guarnición?"];
   let faltante = null;
 
   document.querySelectorAll(".item").forEach(item => {
@@ -572,12 +573,15 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
 
     bloquesUnidad.forEach((bloque, idx) => {
       if (faltante) return;
-      const gruposVisibles = Array.from(bloque.querySelectorAll(".mod-group")).filter(g => g.style.display !== "none");
-      gruposVisibles.forEach(grupo => {
+      GRUPOS_OBLIGATORIOS.forEach(nombreGrupo => {
         if (faltante) return;
+        const grupo = Array.from(bloque.querySelectorAll(".mod-group")).find(g => {
+          if (g.style.display === "none") return false; // grupo oculto por dependencia, no aplica
+          return g.querySelector(".mod-label")?.textContent === nombreGrupo;
+        });
+        if (!grupo) return; // este plato no tiene ese grupo asignado, no aplica
         const marcado = grupo.querySelector("input:checked");
         if (!marcado) {
-          const nombreGrupo = grupo.querySelector(".mod-label")?.textContent || "una opción";
           const etiqueta = bloquesUnidad.length > 1 ? ` (Plato ${idx + 1})` : "";
           faltante = `${cb.value}${etiqueta}: falta elegir "${nombreGrupo}"`;
         }
