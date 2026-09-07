@@ -34,6 +34,65 @@ const IMAGENES_CASERITOS = {
   "Desmechada": "images/placeholder.jpg"
 };
 
+// ===== Adicionales dentro de cada plato (excepto Postres y Bebidas) =====
+const ADICIONALES_DISPONIBLES = [
+  { nombre: "Cascos de Papa 130gr", precio: 12000 },
+  { nombre: "Puré de Papa 120gr", precio: 9000 },
+  { nombre: "Patacones Crocantes", precio: 7000 },
+  { nombre: "Ensalada 101", precio: 5000 }
+];
+
+let adicionalesContador = 0;
+
+function construirAdicionalesHtml(){
+  adicionalesContador++;
+  const prefijo = `adic${adicionalesContador}`;
+  const filas = ADICIONALES_DISPONIBLES.map((a, idx) => {
+    return `<div class="adicional-linea">
+      <label class="adicional-check"><input type="checkbox" class="check-adicional" name="${prefijo}_${idx}" data-nombre="${a.nombre}" data-precio="${a.precio}" onchange="toggleAdicionalCantidad(this)"> ${a.nombre} <span class="adicional-precio">$${a.precio.toLocaleString("es-CO")}</span></label>
+      <input type="number" class="cantidad-adicional" name="${prefijo}_${idx}Cantidad" value="0" min="0" disabled onchange="calcularTotal()">
+    </div>`;
+  }).join("");
+  return `<div class="adicionales-bloque">
+    <button type="button" class="btn-toggle-adicionales" onclick="toggleAdicionalesPanel(this)">➕ Agregar adicionales <span class="adicionales-flecha">▾</span></button>
+    <div class="adicionales-lista">${filas}</div>
+  </div>`;
+}
+
+function toggleAdicionalesPanel(btn){
+  const lista = btn.nextElementSibling;
+  const abierto = lista.classList.toggle("abierta");
+  btn.classList.toggle("activo", abierto);
+}
+
+function toggleAdicionalCantidad(checkbox){
+  const linea = checkbox.closest(".adicional-linea");
+  const cantidad = linea.querySelector(".cantidad-adicional");
+  if (!cantidad) return;
+  if (checkbox.checked){
+    cantidad.disabled = false;
+    if (Number(cantidad.value) === 0) cantidad.value = 1;
+  } else {
+    cantidad.value = 0;
+    cantidad.disabled = true;
+  }
+  calcularTotal();
+}
+
+function extraerAdicionalesItem(item){
+  const extras = [];
+  item.querySelectorAll(".check-adicional").forEach(cb => {
+    if (!cb.checked) return;
+    const linea = cb.closest(".adicional-linea");
+    const cantidad = Number(linea.querySelector(".cantidad-adicional")?.value) || 0;
+    if (cantidad <= 0) return;
+    extras.push(`➕ ${cb.dataset.nombre}${cantidad > 1 ? ` x${cantidad}` : ""}`);
+  });
+  return extras;
+}
+
+
+
 function construirItemCaserito(p, grupos, opciones, asignaciones){
   const id = "Cas" + String(p.id);
   const nombre = p.nombre || "";
@@ -63,12 +122,6 @@ function construirItemCaserito(p, grupos, opciones, asignaciones){
     ? `<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea>`
     : "";
 
-  const incluyeHtml = `<div class="incluye-fijo">
-      <img src="images/sopa.jpg" alt="Sopa" class="incluye-mini">
-      <img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini">
-      <span>Incluye sopa o frijoles</span>
-    </div>`;
-
   return `<div class="item" data-producto-id="${p.id}">
       <div class="item-linea">
         <label><input type="checkbox" class="check-plato" name="${id}" value="${nombre}"
@@ -76,7 +129,7 @@ function construirItemCaserito(p, grupos, opciones, asignaciones){
         <span class="precio" data-precio="${precio}">$${precio.toLocaleString("es-CO")}</span>
         <input type="number" class="cantidad" name="${id}Cantidad" value="0" min="0" disabled oninput="actualizarUnidadesCaserito(this)" onchange="calcularTotal(); actualizarUnidadesCaserito(this)">
       </div>
-      <div class="descripcion">${imgHtml}${desc}${incluyeHtml}<div class="unidades-caserito" id="unidades-${id}"></div>${obsCompartidaHtml}</div>
+      <div class="descripcion">${imgHtml}${desc}<div class="unidades-caserito" id="unidades-${id}"></div>${obsCompartidaHtml}</div>
     </div>`;
 }
 
@@ -95,7 +148,8 @@ function construirBloqueModificadores(productoId, unidad, grupos, opciones){
       <div class="mod-options">${opcionesHtml}</div>
     </div>`;
   }).join("");
-  return `<div class="arma-plato unidad-plato" data-unidad="${unidad}">${modsHtml}<label class="obs-label">📝 Observaciones Plato ${unidad}:</label><textarea class="observaciones-unidad" rows="2" placeholder="Ej: sin cebolla, extra picante..."></textarea></div>`;
+  const adicionalesUnidadHtml = construirAdicionalesHtml();
+  return `<div class="arma-plato unidad-plato" data-unidad="${unidad}">${modsHtml}${adicionalesUnidadHtml}<label class="obs-label">📝 Observaciones Plato ${unidad}:</label><textarea class="observaciones-unidad" rows="2" placeholder="Ej: sin cebolla, extra picante..."></textarea></div>`;
 }
 
 function actualizarUnidadesCaserito(inputCantidad){
@@ -187,13 +241,14 @@ function extraerModificadoresUnidad(scopeElement){
     if (!marcados.length) return; // nada elegido en este grupo
 
     const opcionId = marcados[0].dataset.opcionId;
-    const grupoHijo = grupos.find(g => g.dataset.dependeDeOpcion === opcionId && g.style.display !== "none");
-
-    if (grupoHijo){
-      const marcadosHijo = Array.from(grupoHijo.querySelectorAll('input:checked'));
-      if (marcadosHijo.length){
-        mods.push(marcadosHijo.map(i => i.value).join(", "));
-        return; // se usó la respuesta del hijo, no la del padre
+    if (opcionId) { // solo los modificadores de Caseritos (Supabase) usan data-opcion-id; los de la Carta no
+      const grupoHijo = grupos.find(g => g.dataset.dependeDeOpcion === opcionId && g.style.display !== "none");
+      if (grupoHijo){
+        const marcadosHijo = Array.from(grupoHijo.querySelectorAll('input:checked'));
+        if (marcadosHijo.length){
+          mods.push(marcadosHijo.map(i => i.value).join(", "));
+          return; // se usó la respuesta del hijo, no la del padre
+        }
       }
     }
 
@@ -210,20 +265,33 @@ let multiUnidadContador = 0;
 
 function inicializarModificadoresCarta(){
   document.querySelectorAll("#seccionCarta .item").forEach(item => {
-    const armaPlato = item.querySelector(".arma-plato");
-    if (!armaPlato) return; // este plato de la Carta no tiene modificadores, no aplica
+    const seccion = item.closest(".menu-section");
+    const titulo = seccion?.querySelector("h2")?.textContent || "";
+    const incluirAdicionales = !(titulo.includes("Postres") || titulo.includes("Bebidas"));
+
+    const armaPlato = item.querySelector(".arma-plato"); // puede no existir — no todos los platos tienen modificadores
+    const gruposHtml = armaPlato ? armaPlato.innerHTML : "";
 
     multiUnidadContador++;
     const itemId = "carta" + multiUnidadContador;
     item.dataset.multiId = itemId;
 
-    multiUnidadPlantillas[itemId] = { gruposHtml: armaPlato.innerHTML };
+    multiUnidadPlantillas[itemId] = { gruposHtml, incluirAdicionales };
 
     const cont = document.createElement("div");
     cont.className = "unidades-caserito"; // reutiliza el mismo sistema visual de pestañas de Caseritos
     cont.id = "unidades-" + itemId;
-    armaPlato.parentNode.insertBefore(cont, armaPlato);
-    armaPlato.remove();
+
+    const desc = item.querySelector(".descripcion");
+    const obsLabel = desc?.querySelector(".obs-label");
+    if (armaPlato){
+      armaPlato.parentNode.insertBefore(cont, armaPlato);
+      armaPlato.remove();
+    } else if (obsLabel){
+      obsLabel.insertAdjacentElement("beforebegin", cont);
+    } else if (desc){
+      desc.appendChild(cont);
+    }
 
     // Evita duplicar campo de observaciones: ya queda uno por unidad ("Observaciones Plato N")
     const obsCompartida = item.querySelector(".observaciones");
@@ -238,10 +306,11 @@ function inicializarModificadoresCarta(){
   });
 }
 
-function construirBloqueModificadoresMulti(itemId, unidad, gruposHtml){
+function construirBloqueModificadoresMulti(itemId, unidad, gruposHtml, incluirAdicionales){
   // Renombra los "name" de los inputs para que cada unidad tenga su propia selección independiente
   const conNombresUnicos = gruposHtml.replace(/name="([^"]+)"/g, `name="${itemId}_u${unidad}_$1"`);
-  return `<div class="arma-plato unidad-plato" data-unidad="${unidad}">${conNombresUnicos}<label class="obs-label">📝 Observaciones Plato ${unidad}:</label><textarea class="observaciones-unidad" rows="2" placeholder="Ej: sin cebolla, extra picante..."></textarea></div>`;
+  const adicionalesUnidadHtml = incluirAdicionales ? construirAdicionalesHtml() : "";
+  return `<div class="arma-plato unidad-plato" data-unidad="${unidad}">${conNombresUnicos}${adicionalesUnidadHtml}<label class="obs-label">📝 Observaciones Plato ${unidad}:</label><textarea class="observaciones-unidad" rows="2" placeholder="Ej: sin cebolla, extra picante..."></textarea></div>`;
 }
 
 function actualizarUnidadesMulti(inputCantidad){
@@ -260,7 +329,7 @@ function actualizarUnidadesMulti(inputCantidad){
     bloques = cont.querySelectorAll(".unidad-plato");
   }
   for (let i = bloques.length + 1; i <= cantidad; i++){
-    cont.insertAdjacentHTML("beforeend", construirBloqueModificadoresMulti(itemId, i, plantilla.gruposHtml));
+    cont.insertAdjacentHTML("beforeend", construirBloqueModificadoresMulti(itemId, i, plantilla.gruposHtml, plantilla.incluirAdicionales));
   }
 
   actualizarTabsCaserito(cont, cantidad);
@@ -460,6 +529,16 @@ function calcularTotal() {
     subtotal += precio * cantidad;
     contadorEmpaque += cantidad;
   });
+
+  document.querySelectorAll(".check-adicional").forEach(cb => {
+    if (!cb.checked) return;
+    const linea = cb.closest(".adicional-linea");
+    const cantidadAd = Number(linea?.querySelector(".cantidad-adicional")?.value) || 0;
+    if (cantidadAd <= 0) return;
+    const precioAd = Number(cb.dataset.precio) || 0;
+    subtotal += precioAd * cantidadAd;
+  });
+
   const tipoEntrega = document.getElementById("tipoEntrega")?.value;
   // [SI EL RESTAURANTE COBRA DOMICILIO: descomentar]
   // if (tipoEntrega === "A domicilio") subtotal += COSTO_DOMICILIO;
@@ -532,28 +611,45 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
     const precioSpan = item.querySelector(".precio");
     const precioUnitario = tamanoSel ? (Number(tamanoSel.value) || 0) : (Number(precioSpan?.dataset.precio) || 0);
 
+    const esBebida = item.dataset.categoria === "bebida";
     const bloquesUnidad = Array.from(item.querySelectorAll(".unidad-plato"));
 
     if (bloquesUnidad.length > 1){
-      // Varias unidades: cada plato entra como producto independiente en la lista
-      bloquesUnidad.forEach((bloque, idx) => {
+      // Varias unidades: solo se separan en líneas distintas las que de verdad
+      // tienen algo diferente (modificadores, adicionales u observación).
+      // Las que quedaron idénticas entre sí se agrupan como "N × Plato".
+      const unidadesInfo = bloquesUnidad.map(bloque => {
         const extras = extraerModificadoresUnidad(bloque);
+        extras.push(...extraerAdicionalesItem(bloque));
         const obsUnidad = bloque.querySelector(".observaciones-unidad")?.value.trim();
         if (obsUnidad) extras.push(`Observación: ${obsUnidad}`);
-        productosPedido.push({ nombre: `${cb.value} (Plato ${idx+1})`, cantidad: 1, precioLinea: precioUnitario, extras });
+        return { extras, clave: JSON.stringify(extras) };
+      });
+
+      const grupos = [];
+      unidadesInfo.forEach(u => {
+        const existente = grupos.find(g => g.clave === u.clave);
+        if (existente) existente.cantidad++;
+        else grupos.push({ clave: u.clave, extras: u.extras, cantidad: 1 });
+      });
+
+      grupos.forEach(g => {
+        productosPedido.push({ nombre: cb.value, cantidad: g.cantidad, precioLinea: precioUnitario * g.cantidad, extras: g.extras, esBebida });
       });
 
     } else if (bloquesUnidad.length === 1){
       const bloque = bloquesUnidad[0];
       const extras = extraerModificadoresUnidad(bloque);
+      extras.push(...extraerAdicionalesItem(bloque));
       const obs = bloque.querySelector(".observaciones-unidad")?.value.trim();
       if (obs) extras.push(`Observación: ${obs}`);
-      productosPedido.push({ nombre: cb.value, cantidad, precioLinea: precioUnitario * cantidad, extras });
+      productosPedido.push({ nombre: cb.value, cantidad, precioLinea: precioUnitario * cantidad, extras, esBebida });
 
     } else {
       const obs = item.querySelector(".observaciones")?.value.trim();
-      const extras = obs ? [`Observación: ${obs}`] : [];
-      productosPedido.push({ nombre: cb.value, cantidad, precioLinea: precioUnitario * cantidad, extras });
+      const extras = extraerAdicionalesItem(item);
+      if (obs) extras.push(`Observación: ${obs}`);
+      productosPedido.push({ nombre: cb.value, cantidad, precioLinea: precioUnitario * cantidad, extras, esBebida });
     }
   });
 
@@ -606,6 +702,9 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
 
   mensaje += `\n━━━━━━━━━━━━━━━━━\n\n🛒 PEDIDO\n\n`;
   mensaje += productosPedido.map(p => {
+    if (p.esBebida && p.extras.length){
+      return `${p.cantidad} × ${p.nombre} — ${p.extras.join(" — ")}`;
+    }
     let bloque = `${p.cantidad} × ${p.nombre}`;
     if (p.extras.length) bloque += "\n" + p.extras.map(e => `　• ${e}`).join("\n");
     return bloque;

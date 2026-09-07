@@ -673,7 +673,7 @@
     <h2 onclick="toggleMenu(this)">🥤 Bebidas</h2>
     <div class="platos" style="display:none;">
       <p class="subcat-label">Sodas</p>
-      <div class="item">
+      <div class="item" data-categoria="bebida">
         <div class="item-linea">
           <label><input type="checkbox" class="check-plato" name="Soda" value="Soda"
             onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Soda</span></label>
@@ -683,7 +683,7 @@
         <div class="descripcion">Elige tu sabor de soda.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Sabor</span><div class="mod-options"><label><input type="radio" name="SodaSabor" value="Frutos rojos"> Frutos rojos</label><label><input type="radio" name="SodaSabor" value="Lychee y lulo"> Lychee y lulo</label><label><input type="radio" name="SodaSabor" value="Tamarindo"> Tamarindo</label><label><input type="radio" name="SodaSabor" value="Maracuyá"> Maracuyá</label><label><input type="radio" name="SodaSabor" value="Manzana verde"> Manzana verde</label><label><input type="radio" name="SodaSabor" value="Sandía y lychee"> Sandía y lychee</label><label><input type="radio" name="SodaSabor" value="Sandía"> Sandía</label><label><input type="radio" name="SodaSabor" value="Mango verde"> Mango verde</label><label><input type="radio" name="SodaSabor" value="Cereza"> Cereza</label><label><input type="radio" name="SodaSabor" value="Fresa"> Fresa</label><label><input type="radio" name="SodaSabor" value="Bistró"> Bistró</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
       </div>
       <p class="subcat-label">Jugos</p>
-      <div class="item">
+      <div class="item" data-categoria="bebida">
         <div class="item-linea">
           <label><input type="checkbox" class="check-plato" name="JugoEnAgua" value="Jugo en Agua"
             onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Jugo en Agua</span></label>
@@ -692,7 +692,7 @@
         </div>
         <div class="descripcion">Elige el sabor de tu jugo natural en agua.<div class="arma-plato"><span class="arma-title">Arma tu plato</span><div class="mod-group"><span class="mod-label">Sabor</span><div class="mod-options"><label><input type="radio" name="JugoEnAguaSabor" value="Maracuyá"> Maracuyá</label><label><input type="radio" name="JugoEnAguaSabor" value="Naranja"> Naranja</label><label><input type="radio" name="JugoEnAguaSabor" value="Mora"> Mora</label><label><input type="radio" name="JugoEnAguaSabor" value="Mandarina"> Mandarina</label><label><input type="radio" name="JugoEnAguaSabor" value="Mango"> Mango</label><label><input type="radio" name="JugoEnAguaSabor" value="Lulo"> Lulo</label><label><input type="radio" name="JugoEnAguaSabor" value="Fresa"> Fresa</label></div></div><div class="mod-group"><span class="mod-label">Azúcar</span><div class="mod-options"><label><input type="radio" name="JugoEnAguaAzucar" value="Con azúcar"> Con azúcar</label><label><input type="radio" name="JugoEnAguaAzucar" value="Sin azúcar"> Sin azúcar</label></div></div></div><label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
       </div>
-      <div class="item">
+      <div class="item" data-categoria="bebida">
         <div class="item-linea">
           <label><input type="checkbox" class="check-plato" name="JugoEnLeche" value="Jugo en Leche"
             onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Jugo en Leche</span></label>
@@ -783,49 +783,7 @@
     </div>
   </section>
 
-  <section class="menu-section">
-    <h2 onclick="toggleMenu(this)">➕ Adicionales</h2>
-    <div class="platos" style="display:none;">
-      <div class="item">
-        <div class="item-linea">
-          <label><input type="checkbox" class="check-plato" name="CascosDePapa130gr" value="Cascos de Papa 130gr"
-            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Cascos de Papa 130gr</span></label>
-          <span class="precio" data-precio="12000">$12.000</span>
-          <input type="number" class="cantidad" name="CascosDePapa130grCantidad" value="0" min="0" disabled onchange="calcularTotal()">
-        </div>
-        <div class="descripcion">Cascos de papa criolla fritos.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
-      </div>
-      <div class="item">
-        <div class="item-linea">
-          <label><input type="checkbox" class="check-plato" name="PureDePapa120gr" value="Puré de Papa 120gr"
-            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Puré de Papa 120gr</span></label>
-          <span class="precio" data-precio="9000">$9.000</span>
-          <input type="number" class="cantidad" name="PureDePapa120grCantidad" value="0" min="0" disabled onchange="calcularTotal()">
-        </div>
-        <div class="descripcion">Puré de papa cremoso.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
-      </div>
-      <div class="item">
-        <div class="item-linea">
-          <label><input type="checkbox" class="check-plato" name="PataconesCrocantes" value="Patacones Crocantes"
-            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Patacones Crocantes</span></label>
-          <span class="precio" data-precio="7000">$7.000</span>
-          <input type="number" class="cantidad" name="PataconesCrocantesCantidad" value="0" min="0" disabled onchange="calcularTotal()">
-        </div>
-        <div class="descripcion">Patacones crocantes.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
-      </div>
-      <div class="item">
-        <div class="item-linea">
-          <label><input type="checkbox" class="check-plato" name="Ensalada101" value="Ensalada 101"
-            onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">Ensalada 101</span></label>
-          <span class="precio" data-precio="5000">$5.000</span>
-          <input type="number" class="cantidad" name="Ensalada101Cantidad" value="0" min="0" disabled onchange="calcularTotal()">
-        </div>
-        <div class="descripcion">Ensalada de la casa.<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea></div>
-      </div>
-    </div>
-  </section>
-
-</div>
+  </div>
 
   <div id="seccionCaseritos" style="display:none;">
   <section class="menu-section">
