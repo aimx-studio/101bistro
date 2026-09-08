@@ -91,8 +91,6 @@ function extraerAdicionalesItem(item){
   return extras;
 }
 
-
-
 function construirItemCaserito(p, grupos, opciones, asignaciones){
   const id = "Cas" + String(p.id);
   const nombre = p.nombre || "";
@@ -346,7 +344,7 @@ async function cargarCaseritos(){
       fetch(`${SUPABASE_URL}/rest/v1/grupos_modificadores?select=*&order=orden.asc`, {
         headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
       }),
-      fetch(`${SUPABASE_URL}/rest/v1/opciones_modificador?select=*&order=orden.asc`, {
+      fetch(`${SUPABASE_URL}/rest/v1/opciones_modificador?disponible_hoy=eq.true&select=*&order=orden.asc`, {
         headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
       })
     ]);
@@ -653,8 +651,8 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
     }
   });
 
-  // Validar modificadores obligatorios en Caseritos: "Acompañamiento principal" y "¿Desea guarnición?"
-  const GRUPOS_OBLIGATORIOS = ["Acompañamiento principal", "¿Desea guarnición?"];
+  // Validar modificadores obligatorios en Caseritos: "Acompañamiento principal", "¿Desea guarnición?" y "Sopa del día" (solo si eligió Sopa)
+  const GRUPOS_OBLIGATORIOS = ["Acompañamiento principal", "¿Desea guarnición?", "Sopa del día"];
   let faltante = null;
 
   document.querySelectorAll(".item").forEach(item => {
