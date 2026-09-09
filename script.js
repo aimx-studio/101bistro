@@ -5,34 +5,23 @@
 const SUPABASE_URL = "https://hotryxyvbdbizfivgfft.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdHJ5eHl2YmRiaXpmaXZnZmZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MDk1MDMsImV4cCI6MjA5MjM4NTUwM30.e_8rXHLVKl8gGH7r65LzCbXpLVygnHJf3lSvYXqosfw";
 
-let caseritosCargados = false;
-let caseritosMods = {}; // { [productoId]: { grupos: [...], opciones: [...] } } — plantilla de modificadores por plato
-
-// ===== Imágenes de los platos (Caseritos) =====
-// Escribe el nombre del archivo dentro de la carpeta images/ para cada plato.
-// Ejemplo: "Costilla BBQ": "images/costilla-bbq.jpg"
-// Si un plato se deja como "" (vacío), simplemente no muestra foto — no rompe nada.
-const IMAGENES_CASERITOS = {
-  "Róbalo en posta frito": "images/placeholder.jpg",
-  "Róbalo en posta apanado": "images/placeholder.jpg",
-  "Cazuela de mariscos": "images/placeholder.jpg",
-  "Bandeja paisa": "images/placeholder.jpg",
-  "Chicharrón": "images/placeholder.jpg",
-  "Costilla BBQ": "images/placeholder.jpg",
-  "Pechuga rellena": "images/placeholder.jpg",
-  "Pechuga gratinada": "images/placeholder.jpg",
-  "Pechuga apanada": "images/placeholder.jpg",
-  "Cerdo apanado": "images/placeholder.jpg",
-  "Camarones apanados": "images/placeholder.jpg",
-  "Arroz con camarón": "images/placeholder.jpg",
-  "Arroz marinero": "images/placeholder.jpg",
-  "Res a la parrilla": "images/placeholder.jpg",
-  "Tazón paisa": "images/placeholder.jpg",
-  "Cerdo parrilla": "images/placeholder.jpg",
-  "Pechuga parrilla": "images/placeholder.jpg",
-  "Molida": "images/placeholder.jpg",
-  "Desmechada": "images/placeholder.jpg"
-};
+// Sopa del día: se llena una sola vez desde Supabase y se inyecta en cada
+// pestaña "Sopa del día" de cada plato cuando se genera (ver construirBloqueModificadoresMulti).
+let sopaDelDiaHtml = "";
+async function cargarSopaDelDia(){
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/opciones_modificador?grupo_id=eq.9&disponible_hoy=eq.true&select=*&order=orden.asc`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+    });
+    if (!resp.ok) throw new Error("Respuesta no válida de Supabase");
+    const sopas = await resp.json();
+    sopaDelDiaHtml = sopas.length
+      ? sopas.map(s => `<label><input type="radio" name="SopaDelDiaOpcion" value="${s.nombre}"> ${s.nombre}</label>`).join("")
+      : `<span style="color:var(--dim);font-size:0.78rem;">Hoy no hay sopas disponibles, elige Frijol.</span>`;
+  } catch (err){
+    sopaDelDiaHtml = `<span style="color:var(--dim);font-size:0.78rem;">No se pudo cargar la sopa del día.</span>`;
+  }
+}
 
 // ===== Adicionales dentro de cada plato (excepto Postres y Bebidas) =====
 const ADICIONALES_DISPONIBLES = [
@@ -91,87 +80,9 @@ function extraerAdicionalesItem(item){
   return extras;
 }
 
-function construirItemCaserito(p, grupos, opciones, asignaciones){
-  const id = "Cas" + String(p.id);
-  const nombre = p.nombre || "";
-  const precio = Number(p.precio) || 0;
-  const desc = p.descripcion || "";
-  const rutaImagen = IMAGENES_CASERITOS[nombre] || p.imagen || "";
-  const imgHtml = rutaImagen ? `<img src="${rutaImagen}" alt="${nombre}" class="foto-plato">` : "";
 
-  const idsGrupoBase = asignaciones.filter(a => a.producto_id === p.id).map(a => a.grupo_id);
-  const gruposBase = grupos.filter(g => idsGrupoBase.includes(g.id) && g.tipo !== 'texto');
 
-  const gruposDependientes = grupos.filter(g => {
-    if (!g.depende_de_opcion_id) return false;
-    const opcionPadre = opciones.find(o => o.id === g.depende_de_opcion_id);
-    return opcionPadre && idsGrupoBase.includes(opcionPadre.grupo_id);
-  });
 
-  const todosLosGrupos = [...gruposBase, ...gruposDependientes].sort((a,b) => a.orden - b.orden);
-
-  // Guardamos la plantilla de modificadores del plato para generar un bloque
-  // independiente por cada unidad cuando cambie la cantidad.
-  caseritosMods[p.id] = { grupos: todosLosGrupos, opciones };
-
-  // Si el plato tiene modificadores, la observación va dentro de cada pestaña (Plato 1, Plato 2...).
-  // Si no tiene modificadores, se deja una sola observación general como antes.
-  const obsCompartidaHtml = todosLosGrupos.length === 0
-    ? `<label class="obs-label">📝 Observaciones:</label><textarea class="observaciones" rows="2" placeholder="Ej: sin ensalada, más frijoles, sin plátano..."></textarea>`
-    : "";
-
-  return `<div class="item" data-producto-id="${p.id}">
-      <div class="item-linea">
-        <label><input type="checkbox" class="check-plato" name="${id}" value="${nombre}"
-          onchange="toggleCantidad(this); toggleDescripcion(this)"><span class="txt">${nombre}</span></label>
-        <span class="precio" data-precio="${precio}">$${precio.toLocaleString("es-CO")}</span>
-        <input type="number" class="cantidad" name="${id}Cantidad" value="0" min="0" disabled oninput="actualizarUnidadesCaserito(this)" onchange="calcularTotal(); actualizarUnidadesCaserito(this)">
-      </div>
-      <div class="descripcion">${imgHtml}${desc}<div class="unidades-caserito" id="unidades-${id}"></div>${obsCompartidaHtml}</div>
-    </div>`;
-}
-
-function construirBloqueModificadores(productoId, unidad, grupos, opciones){
-  const prefijo = `Cas${productoId}_u${unidad}`;
-  const modsHtml = grupos.map(g => {
-    const opcionesGrupo = opciones.filter(o => o.grupo_id === g.id).sort((a,b) => a.orden - b.orden);
-    const inputType = g.tipo === 'multiple' ? 'checkbox' : 'radio';
-    const nombreInput = `${prefijo}_g${g.id}`;
-    const opcionesHtml = opcionesGrupo.map(o =>
-      `<label><input type="${inputType}" name="${nombreInput}" value="${o.nombre}" data-opcion-id="${o.id}"> ${o.nombre}</label>`
-    ).join("");
-    const oculto = g.depende_de_opcion_id ? ' style="display:none"' : '';
-    return `<div class="mod-group" data-grupo-id="${g.id}" data-depende-de-opcion="${g.depende_de_opcion_id || ''}"${oculto}>
-      <span class="mod-label">${g.nombre}</span>
-      <div class="mod-options">${opcionesHtml}</div>
-    </div>`;
-  }).join("");
-  const adicionalesUnidadHtml = construirAdicionalesHtml();
-  return `<div class="arma-plato unidad-plato" data-unidad="${unidad}">${modsHtml}${adicionalesUnidadHtml}<label class="obs-label">📝 Observaciones Plato ${unidad}:</label><textarea class="observaciones-unidad" rows="2" placeholder="Ej: sin cebolla, extra picante..."></textarea></div>`;
-}
-
-function actualizarUnidadesCaserito(inputCantidad){
-  const item = inputCantidad.closest(".item");
-  const cont = item?.querySelector(".unidades-caserito");
-  if (!cont) return; // no es un Caserito (es de la Carta), no aplica
-  const productoId = Number(item.dataset.productoId);
-  const cantidad = Number(inputCantidad.value) || 0;
-  const datos = caseritosMods[productoId];
-  if (!datos || !datos.grupos.length) { cont.innerHTML = ""; return; }
-
-  let bloques = cont.querySelectorAll(".unidad-plato");
-  // Si bajó la cantidad, quita los bloques sobrantes desde el final
-  while (bloques.length > cantidad){
-    cont.removeChild(cont.lastElementChild);
-    bloques = cont.querySelectorAll(".unidad-plato");
-  }
-  // Si subió la cantidad, agrega bloques nuevos sin tocar los que ya tenían selección
-  for (let i = bloques.length + 1; i <= cantidad; i++){
-    cont.insertAdjacentHTML("beforeend", construirBloqueModificadores(productoId, i, datos.grupos, datos.opciones));
-  }
-
-  actualizarTabsCaserito(cont, cantidad);
-}
 
 function actualizarTabsCaserito(cont, cantidad){
   let nav = cont.querySelector(".unidad-tabs");
@@ -262,7 +173,7 @@ let multiUnidadPlantillas = {}; // { [itemId]: { gruposHtml: "..." } } — plant
 let multiUnidadContador = 0;
 
 function inicializarModificadoresCarta(){
-  document.querySelectorAll("#seccionCarta .item").forEach(item => {
+  document.querySelectorAll("#seccionCarta .item, #seccionCaseritos .item").forEach(item => {
     const seccion = item.closest(".menu-section");
     const titulo = seccion?.querySelector("h2")?.textContent || "";
     const incluirAdicionales = !(titulo.includes("Postres") || titulo.includes("Bebidas"));
@@ -306,7 +217,9 @@ function inicializarModificadoresCarta(){
 
 function construirBloqueModificadoresMulti(itemId, unidad, gruposHtml, incluirAdicionales){
   // Renombra los "name" de los inputs para que cada unidad tenga su propia selección independiente
-  const conNombresUnicos = gruposHtml.replace(/name="([^"]+)"/g, `name="${itemId}_u${unidad}_$1"`);
+  let conNombresUnicos = gruposHtml.replace(/name="([^"]+)"/g, `name="${itemId}_u${unidad}_$1"`);
+  // Inyecta las sopas del día disponibles hoy en el placeholder vacío correspondiente
+  conNombresUnicos = conNombresUnicos.replace('<div class="mod-options sopa-opciones-lista"></div>', `<div class="mod-options sopa-opciones-lista">${sopaDelDiaHtml}</div>`);
   const adicionalesUnidadHtml = incluirAdicionales ? construirAdicionalesHtml() : "";
   return `<div class="arma-plato unidad-plato" data-unidad="${unidad}">${conNombresUnicos}${adicionalesUnidadHtml}<label class="obs-label">📝 Observaciones Plato ${unidad}:</label><textarea class="observaciones-unidad" rows="2" placeholder="Ej: sin cebolla, extra picante..."></textarea></div>`;
 }
@@ -333,49 +246,8 @@ function actualizarUnidadesMulti(inputCantidad){
   actualizarTabsCaserito(cont, cantidad);
 }
 
-async function cargarCaseritos(){
-  if (caseritosCargados) return; // ya se cargaron en esta visita, no repetir la consulta
-  const cont = document.getElementById("caseritosLista");
-  try {
-    const [prodResp, grupoResp, opcionResp] = await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/productos?activo_caserito=eq.true&select=*`, {
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-      }),
-      fetch(`${SUPABASE_URL}/rest/v1/grupos_modificadores?select=*&order=orden.asc`, {
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-      }),
-      fetch(`${SUPABASE_URL}/rest/v1/opciones_modificador?disponible_hoy=eq.true&select=*&order=orden.asc`, {
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-      })
-    ]);
-    if (!prodResp.ok || !grupoResp.ok || !opcionResp.ok) throw new Error("Respuesta no válida de Supabase");
-    const productos = await prodResp.json();
-    const grupos = await grupoResp.json();
-    const opciones = await opcionResp.json();
-
-    if (!productos.length){
-      cont.innerHTML = '<p class="caseritos-msg">Hoy no hay Caseritos disponibles. Vuelve a intentar más tarde.</p>';
-      return;
-    }
-
-    const ids = productos.map(p => p.id);
-    const pmResp = await fetch(`${SUPABASE_URL}/rest/v1/producto_modificadores?producto_id=in.(${ids.join(",")})&select=*`, {
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-    });
-    if (!pmResp.ok) throw new Error("Respuesta no válida de Supabase");
-    const asignaciones = await pmResp.json();
-
-    productos.sort((a, b) => (Number(b.precio) || 0) - (Number(a.precio) || 0));
-    cont.innerHTML = productos.map(p => construirItemCaserito(p, grupos, opciones, asignaciones)).join("");
-    caseritosCargados = true;
-    inicializarDependenciasModificadores();
-  } catch (err){
-    cont.innerHTML = '<p class="caseritos-msg">No se pudieron cargar los Caseritos en este momento.</p>';
-  }
-}
-
 function inicializarDependenciasModificadores(){
-  document.getElementById("caseritosLista").addEventListener("change", (e) => {
+  document.getElementById("pedidoForm").addEventListener("change", (e) => {
     const input = e.target.closest('.mod-options input');
     if (!input) return;
     // Buscar dentro de la pestaña específica (Plato 1, Plato 2...) en vez de todo el plato,
@@ -459,7 +331,6 @@ function mostrarCaseritos(){
   document.getElementById("pedidoForm").style.display = "block";
   document.getElementById("seccionCaseritos").style.display = "block";
   document.getElementById("seccionCarta").style.display = "none";
-  cargarCaseritos();
 }
 
 function volverLanding(){
@@ -469,6 +340,8 @@ function volverLanding(){
 
 inicializarHorario();
 inicializarModificadoresCarta();
+inicializarDependenciasModificadores();
+cargarSopaDelDia();
 
 /* ===== Funciones fijas de la plantilla — NO CAMBIAR ===== */
 function toggleMenu(titulo) {
@@ -491,11 +364,7 @@ function toggleCantidad(checkbox) {
     cantidad.value = 0;
     cantidad.disabled = true;
   }
-  if (item.dataset.multiId) {
-    actualizarUnidadesMulti(cantidad);
-  } else {
-    actualizarUnidadesCaserito(cantidad);
-  }
+  actualizarUnidadesMulti(cantidad);
   calcularTotal();
 }
 
@@ -782,7 +651,7 @@ document.addEventListener("focusout", (e) => {
       const valor = Number(e.target.value);
       if (!valor || valor < 1) {
         e.target.value = 1;
-        actualizarUnidadesCaserito(e.target);
+        actualizarUnidadesMulti(e.target);
         calcularTotal();
       }
     }
