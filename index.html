@@ -24,11 +24,11 @@
     <p class="landing-intro">¿Qué se te antoja hoy?</p>
     <button type="button" class="landing-btn" id="btnCarta" onclick="mostrarCarta()">
       📖 Ver la Carta
-      <small>Disponible de 11:00 a.m. a 11:00 p.m.</small>
+      <small>Disponible de 10:00 a.m. a 10:30 p.m. (último pedido)</small>
     </button>
     <button type="button" class="landing-btn" id="btnCaseritos" onclick="mostrarCaseritos()">
       🏠 Ver Caseritos
-      <small>Disponible de 11:00 a.m. a 3:00 p.m.</small>
+      <small>Pedidos desde las 10:30 a.m. · entrega desde las 11:30 a.m. · hasta las 3:00 p.m.</small>
     </button>
     <p id="cerradoMsg" class="cerrado-msg" style="display:none;"></p>
   </div>
@@ -786,6 +786,7 @@
   </div>
 
   <div id="seccionCaseritos" style="display:none;">
+  <p id="avisoCaseritosTemprano" class="cerrado-msg" style="display:none;"></p>
   <section class="menu-section">
     <h2 style="cursor:default;">🏠 Caseritos</h2>
     <div class="platos" style="display:block;">

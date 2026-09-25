@@ -274,10 +274,11 @@ function inicializarDependenciasModificadores(){
 /* ===== Horarios ===== */
 const HORA_APERTURA = 10 * 60 + 30;   // 10:30 a.m.
 const HORA_CIERRE   = 22 * 60 + 15;   // 10:15 p.m.
-const CASERITOS_INICIO = 0;           // TEMPORAL: pruebas, quitar después
-const CASERITOS_FIN    = 23 * 60 + 59; // TEMPORAL: pruebas, quitar después
-const CARTA_INICIO = 11 * 60;         // 11:00 a.m.
-const CARTA_FIN    = 23 * 60;         // 11:00 p.m.
+const CASERITOS_INICIO = 10 * 60 + 30; // 10:30 a.m.
+const CASERITOS_FIN    = 15 * 60;      // 3:00 p.m.
+const CASERITOS_ENTREGA_INICIO = 11 * 60 + 30; // 11:30 a.m. — hora en que arranca la entrega/preparación
+const CARTA_INICIO = 10 * 60;         // 10:00 a.m.
+const CARTA_FIN    = 22 * 60 + 30;    // 10:30 p.m. (último pedido)
 
 function minutosAhora(){
   const ahora = new Date();
@@ -333,6 +334,16 @@ function mostrarCaseritos(){
   document.getElementById("seccionCaseritos").style.display = "block";
   document.getElementById("seccionCarta").style.display = "none";
   history.pushState({ vista: "caseritos" }, "", "");
+
+  const aviso = document.getElementById("avisoCaseritosTemprano");
+  if (aviso){
+    if (minutosAhora() < CASERITOS_ENTREGA_INICIO){
+      aviso.style.display = "block";
+      aviso.textContent = `🕐 Ya puedes hacer tu pedido, pero la entrega comienza a partir de las ${formatoHora(CASERITOS_ENTREGA_INICIO)}.`;
+    } else {
+      aviso.style.display = "none";
+    }
+  }
 }
 
 function volverLanding(){
