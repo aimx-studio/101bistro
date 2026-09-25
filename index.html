@@ -35,7 +35,7 @@
 
   <form id="pedidoForm" style="display:none;">
     <div class="top-actions">
-      <button type="button" class="volver-btn" onclick="volverLanding()">‹ Cambiar de menú</button>
+      <button type="button" class="volver-btn" onclick="history.back()">‹ Cambiar de menú</button>
       <button type="button" class="btn-vaciar" onclick="confirmarVaciarPedido()">🗑️ Vaciar pedido</button>
     </div>
 
@@ -798,7 +798,6 @@
           <input type="number" class="cantidad" name="RobaloEnPostaApanadoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Róbalo en posta apanado" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -822,7 +821,6 @@
           <input type="number" class="cantidad" name="RobaloEnPostaFritoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Róbalo en posta frito" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -846,7 +844,6 @@
           <input type="number" class="cantidad" name="BandejaPaisaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Bandeja paisa" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -870,7 +867,6 @@
           <input type="number" class="cantidad" name="CazuelaDeMariscosCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Cazuela de mariscos" class="foto-plato">
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
             <div class="mod-group"><span class="mod-label">¿Desea arroz?</span><div class="mod-options"><label><input type="radio" name="CazuelaDeMariscosArroz" value="✅ Con arroz" data-opcion-id="ConArroz"> ✅ Con arroz</label><label><input type="radio" name="CazuelaDeMariscosArroz" value="❌ Sin arroz"> ❌ Sin arroz</label></div></div>
@@ -891,7 +887,6 @@
           <input type="number" class="cantidad" name="CamaronesApanadosCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Camarones apanados" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -915,7 +910,6 @@
           <input type="number" class="cantidad" name="ResALaParrillaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Res a la parrilla" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -939,7 +933,6 @@
           <input type="number" class="cantidad" name="CerdoApanadoCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Cerdo apanado" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -963,7 +956,6 @@
           <input type="number" class="cantidad" name="ChicharronCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Chicharrón" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -987,7 +979,6 @@
           <input type="number" class="cantidad" name="CostillaBBQCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Costilla BBQ" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -1011,7 +1002,6 @@
           <input type="number" class="cantidad" name="ArrozConCamaronCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Arroz con camarón" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -1035,7 +1025,6 @@
           <input type="number" class="cantidad" name="ArrozMarineroCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Arroz marinero" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -1059,7 +1048,6 @@
           <input type="number" class="cantidad" name="PechugaApanadaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Pechuga apanada" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -1083,7 +1071,6 @@
           <input type="number" class="cantidad" name="PechugaRellenaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Pechuga rellena" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -1107,7 +1094,6 @@
           <input type="number" class="cantidad" name="TazonPaisaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Tazón paisa" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -1131,7 +1117,6 @@
           <input type="number" class="cantidad" name="PechugaGratinadaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Pechuga gratinada" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -1155,7 +1140,6 @@
           <input type="number" class="cantidad" name="CerdoParrillaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Cerdo parrilla" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -1179,7 +1163,6 @@
           <input type="number" class="cantidad" name="PechugaParrillaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Pechuga parrilla" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -1203,7 +1186,6 @@
           <input type="number" class="cantidad" name="MolidaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Molida" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>
@@ -1227,7 +1209,6 @@
           <input type="number" class="cantidad" name="DesmechadaCantidad" value="0" min="0" disabled onchange="calcularTotal()">
         </div>
         <div class="descripcion">
-          <img src="images/placeholder.jpg" alt="Desmechada" class="foto-plato">
           <div class="incluye-fijo"><img src="images/sopa.jpg" alt="Sopa" class="incluye-mini"><img src="images/frijoles.jpg" alt="Frijoles" class="incluye-mini"><span>Incluye sopa o frijoles</span></div>
           <div class="arma-plato">
             <span class="arma-title">Arma tu plato</span>

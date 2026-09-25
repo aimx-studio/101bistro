@@ -324,6 +324,7 @@ function mostrarCarta(){
   document.getElementById("pedidoForm").style.display = "block";
   document.getElementById("seccionCarta").style.display = "block";
   document.getElementById("seccionCaseritos").style.display = "none";
+  history.pushState({ vista: "carta" }, "", "");
 }
 
 function mostrarCaseritos(){
@@ -331,12 +332,20 @@ function mostrarCaseritos(){
   document.getElementById("pedidoForm").style.display = "block";
   document.getElementById("seccionCaseritos").style.display = "block";
   document.getElementById("seccionCarta").style.display = "none";
+  history.pushState({ vista: "caseritos" }, "", "");
 }
 
 function volverLanding(){
   document.getElementById("pedidoForm").style.display = "none";
   document.getElementById("landing").style.display = "block";
 }
+
+/* Intercepta el botón "atrás" del teléfono/navegador: en vez de salir
+   del sitio, si el cliente estaba viendo Carta o Caseritos lo regresa
+   al landing (¿Qué se te antoja hoy?) dentro de la misma página. */
+window.addEventListener("popstate", function(){
+  volverLanding();
+});
 
 inicializarHorario();
 inicializarModificadoresCarta();
