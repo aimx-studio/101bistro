@@ -605,6 +605,7 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
   if (especificaciones) mensaje += `📒 Especificaciones: ${especificaciones}\n`;
 
   mensaje += `\n💸 TOTAL: ${total}`;
+  mensaje += `\n*En este total no se incluye el costo del domicilio*`;
 
   // ===== Registro en Google Sheets (silencioso, no bloquea el envío a WhatsApp) =====
   const platosTexto = productosPedido.map(p => {
