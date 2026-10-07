@@ -625,14 +625,23 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
   formData.append('entry.1313055968', especificaciones || '');
   formData.append('entry.296477633', `${total} COP`);
 
+  const numero = "573108191468";
+  const urlWhatsApp = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensaje);
+  let redirigido = false;
+  const irAWhatsApp = () => {
+    if (redirigido) return;
+    redirigido = true;
+    window.location.href = urlWhatsApp;
+  };
+
   fetch('https://docs.google.com/forms/d/e/1FAIpQLSeFreSTyhy0Y3Hl5t6yZhrwZLa7EsGCMIDS7ToFPzchY3-RFQ/formResponse', {
     method: 'POST',
     mode: 'no-cors',
+    keepalive: true,
     body: formData
-  });
+  }).catch(() => {}).finally(irAWhatsApp);
 
-  const numero = "573108191468";
-  window.location.href = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensaje);
+  setTimeout(irAWhatsApp, 1500);
 });
 
 /* ===== Vaciar pedido (con confirmación) ===== */
