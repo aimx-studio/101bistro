@@ -440,6 +440,7 @@ function calcularTotal() {
 function manejarEntrega() {
   const valor = document.getElementById("tipoEntrega").value;
   document.getElementById("direccionField").style.display = valor === "A domicilio" ? "block" : "none";
+  document.getElementById("notaDomicilio").style.display = valor === "A domicilio" ? "block" : "none";
   document.getElementById("mesaField").style.display = valor === "Comer dentro del local" ? "block" : "none";
   // Domicilio sin costo adicional por ahora — costoDomicilio queda oculto.
 }
@@ -605,7 +606,7 @@ document.getElementById("pedidoForm").addEventListener("submit", function(e){
   if (especificaciones) mensaje += `📒 Especificaciones: ${especificaciones}\n`;
 
   mensaje += `\n💸 TOTAL: ${total}`;
-  mensaje += `\n*En este total no se incluye el costo del domicilio*`;
+  if (tipoEntrega === "A domicilio") mensaje += `\n*En este total no se incluye el costo del domicilio*`;
 
   // ===== Registro en Google Sheets (silencioso, no bloquea el envío a WhatsApp) =====
   const platosTexto = productosPedido.map(p => {
